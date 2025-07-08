@@ -1,44 +1,46 @@
 // src/components/CraftingTreeViewer.tsx
 import React, { useState, useEffect } from 'react';
 import { useRecipeStore } from '../store/useRecipeStore';
-import { buildCraftingTree, type TreeNode } from '../utils/craftingTreeUtils'; // ✅ 'type' for TreeNode
-import type { Recipe, BlacksmithingAcquisition } from '../types'; // ✅ 'type' for Recipe and BlacksmithingAcquisition
+import {
+  buildCraftingTree,
+  calculateTotalRawMaterials,
+  type TreeNode,
+} from '../utils/craftingTreeUtils';
+import type { Recipe, BlacksmithingAcquisition } from '../types';
 
-import './CraftingTreeViewer.css'; // ✅ Import the CSS file
+import './CraftingTreeViewer.css';
 
-const CraftingTreeViewer: React.FC = () => {
-  const recipes = useRecipeStore((state) => state.recipes);
-  const [selectedRootItem, setSelectedRootItem] = useState<string>('');
-  const [craftingTree, setCraftingTree] = useState<TreeNode | null>(null);
+// ✅ NEW: Create a separate component for rendering individual TreeNodes
+interface TreeNodeProps {
+  node: TreeNode;
+  depth: number;
+}
 
-  // Filter for only Blacksmithing recipes to be potential root items
-  const blacksmithingRecipes = recipes.filter(
-    (recipe) => recipe.acquisition.type === 'blacksmithing',
-  ) as (Recipe & { acquisition: BlacksmithingAcquisition })[]; // Cast for type safety
+const TreeNodeComponent: React.FC<TreeNodeProps> = ({ node, depth }) => {
+  const [isExpanded, setIsExpanded] = useState(true); // Default to expanded
+  const indentation = { marginLeft: `${depth * 20}px` };
 
-  // Effect to build the tree whenever the selectedRootItem or recipes change
-  useEffect(() => {
-    if (selectedRootItem) {
-      const tree = buildCraftingTree(selectedRootItem, recipes);
-      setCraftingTree(tree);
-    } else {
-      setCraftingTree(null); // Clear tree if no item selected
-    }
-  }, [selectedRootItem, recipes]);
+  // Determine if the toggle button should be shown
+  const showToggleButton =
+    node.isCrafted && node.children && node.children.length > 0;
 
-  // Recursive component to render tree nodes
-  const renderTreeNode = (node: TreeNode, depth: number = 0) => {
-    // const isRoot = depth === 0; // Not used currently, but kept for context if needed
-    const indentation = { marginLeft: `${depth * 20}px` }; // Simple indentation
+  const handleToggle = () => {
+    setIsExpanded(!isExpanded);
+  };
 
-    return (
-      <li key={node.itemName + depth} style={indentation}>
-        {/* Display item name and quantity needed for its parent */}
+  return (
+    <li style={indentation}>
+      <div className='node-header'>
+        {showToggleButton && (
+          <button onClick={handleToggle} className='toggle-button'>
+            {isExpanded ? '▼' : '►'}{' '}
+            {/* Down arrow for expanded, right for collapsed */}
+          </button>
+        )}
         <span className={node.isCrafted ? 'crafted-item' : 'raw-material'}>
           {node.itemName} (x{node.quantity})
         </span>
 
-        {/* Display if it's a raw material or part of a cycle */}
         {!node.isCrafted && (
           <span className='node-type-label'> [Raw Material]</span>
         )}
@@ -46,16 +48,55 @@ const CraftingTreeViewer: React.FC = () => {
           node.children.some(
             (child) => child.itemName === 'CYCLE DETECTED!',
           ) && <span className='cycle-detected-label'> [Cycle Detected!]</span>}
+      </div>
 
-        {/* Recursively render children if they exist */}
-        {node.children && node.children.length > 0 && (
-          <ul>
-            {node.children.map((child) => renderTreeNode(child, depth + 1))}
-          </ul>
-        )}
-      </li>
-    );
-  };
+      {/* Conditionally render children based on isExpanded state */}
+      {isExpanded && node.children && node.children.length > 0 && (
+        <ul>
+          {node.children.map((child, index) => (
+            // Use index as key here, as itemName might not be unique if a cycle is detected and the placeholder is used multiple times
+            <TreeNodeComponent
+              key={child.itemName + depth + index}
+              node={child}
+              depth={depth + 1}
+            />
+          ))}
+        </ul>
+      )}
+    </li>
+  );
+};
+
+const CraftingTreeViewer: React.FC = () => {
+  const recipes = useRecipeStore((state) => state.recipes);
+  const [selectedRootItem, setSelectedRootItem] = useState<string>('');
+  const [craftingTree, setCraftingTree] = useState<TreeNode | null>(null);
+  const [totalRawMaterials, setTotalRawMaterials] = useState<
+    Map<string, number>
+  >(new Map());
+
+  const blacksmithingRecipes = recipes.filter(
+    (recipe) => recipe.acquisition.type === 'blacksmithing',
+  ) as (Recipe & { acquisition: BlacksmithingAcquisition })[];
+
+  useEffect(() => {
+    if (selectedRootItem) {
+      const tree = buildCraftingTree(selectedRootItem, recipes);
+      setCraftingTree(tree);
+
+      if (tree) {
+        setTotalRawMaterials(calculateTotalRawMaterials(tree));
+      } else {
+        setTotalRawMaterials(new Map());
+      }
+    } else {
+      setCraftingTree(null);
+      setTotalRawMaterials(new Map());
+    }
+  }, [selectedRootItem, recipes]);
+
+  // Removed renderTreeNode function, now using TreeNodeComponent directly
+  // const renderTreeNode = (node: TreeNode, depth: number = 0) => { /* ... */ };
 
   return (
     <div className='crafting-tree-viewer-container card'>
@@ -84,10 +125,29 @@ const CraftingTreeViewer: React.FC = () => {
         </p>
       )}
 
+      {/* Crafting Tree Display */}
       {craftingTree && (
         <div className='crafting-tree-display'>
           <h3>Tree for: {craftingTree.itemName}</h3>
-          <ul className='tree-root'>{renderTreeNode(craftingTree)}</ul>
+          <ul className='tree-root'>
+            {/* ✅ Render the root node using the new TreeNodeComponent */}
+            <TreeNodeComponent node={craftingTree} depth={0} />
+          </ul>
+        </div>
+      )}
+
+      {craftingTree && totalRawMaterials.size > 0 && (
+        <div className='total-raw-materials-display'>
+          <h3>Total Raw Materials Needed:</h3>
+          <ul>
+            {Array.from(totalRawMaterials.entries()).map(
+              ([itemName, quantity]) => (
+                <li key={itemName}>
+                  <strong>{itemName}</strong>: {quantity}
+                </li>
+              ),
+            )}
+          </ul>
         </div>
       )}
 

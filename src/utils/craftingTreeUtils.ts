@@ -1,6 +1,6 @@
 // src/utils/craftingTreeUtils.ts
 
-import type { Recipe, Ingredient, BlacksmithingAcquisition } from '../types';
+import type { Recipe, Ingredient, BlacksmithingAcquisition } from '../types'; // Ensure 'type' is used here
 
 /**
  * Interface representing a node in the crafting dependency tree.
@@ -105,4 +105,45 @@ export const buildCraftingTree = (
 
   // Start building the tree from the root recipe
   return buildNode(rootRecipe.itemName, 1); // The root item is '1' of itself
+};
+
+/**
+ * Calculates the total quantities of all raw (non-crafted) materials needed for a given crafting tree.
+ * @param treeNode The root TreeNode of the crafting tree.
+ * @returns A Map where keys are raw material names (string) and values are their total required quantities (number).
+ */
+export const calculateTotalRawMaterials = (
+  treeNode: TreeNode,
+): Map<string, number> => {
+  const totals = new Map<string, number>();
+
+  /**
+   * Recursive helper to traverse the tree and accumulate raw material quantities.
+   * @param node The current node being processed.
+   * @param multiplier The cumulative multiplier from parent nodes (e.g., if a sword needs 3 bars, and a bar needs 2 ore,
+   * the ore's quantity for the sword is 2 * 3 = 6).
+   */
+  const traverse = (node: TreeNode, multiplier: number) => {
+    // Calculate the actual quantity needed at this level based on previous multipliers
+    const actualQuantity = node.quantity * multiplier;
+
+    // If it's a raw material (not crafted and not a cycle indicator)
+    if (!node.isCrafted && node.itemName !== 'CYCLE DETECTED!') {
+      // Add or update its total quantity
+      totals.set(
+        node.itemName,
+        (totals.get(node.itemName) || 0) + actualQuantity,
+      );
+    } else if (node.children) {
+      // If it's a crafted item, recurse into its children
+      for (const child of node.children) {
+        traverse(child, actualQuantity); // Pass the current node's actual quantity as the new multiplier
+      }
+    }
+  };
+
+  // Start the traversal from the root node with a multiplier of 1 (for the root item itself)
+  traverse(treeNode, 1);
+
+  return totals;
 };

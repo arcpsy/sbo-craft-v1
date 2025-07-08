@@ -73,3 +73,62 @@
   font-weight: bold;
   margin-left: 5px;
 }
+
+.total-raw-materials-display {
+  margin-top: 25px;
+  padding: 15px;
+  border: 1px dashed #007bff; /* A dashed border to distinguish it */
+  border-radius: 8px;
+  background-color: #e7f3ff; /* Light blue background */
+}
+
+.total-raw-materials-display h3 {
+  color: #0056b3;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.total-raw-materials-display ul {
+  list-style-type: disc; /* Use disc bullets for a list */
+  padding-left: 20px;
+}
+
+.total-raw-materials-display li {
+  line-height: 1.5;
+  color: #333;
+}
+
+.tree-root li {
+  /* No change here, keep existing line-height, padding */
+}
+
+.node-header {
+  display: flex; /* Aligns toggle button and text */
+  align-items: center;
+  padding: 2px 0; /* Add some padding if needed */
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  font-size: 0.9em;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 5px;
+  width: 20px; /* Give it a fixed width for alignment */
+  text-align: center;
+  color: #555; /* A subtle color */
+  padding: 0;
+  line-height: 1; /* Adjust line height for cleaner appearance */
+}
+
+.toggle-button:hover {
+  color: #007bff;
+}
+
+/* Adjust padding for nested ul to avoid misaligned lines */
+.tree-root ul {
+  padding-left: 20px; /* Increased from 10px to align with text */
+  border-left: 1px solid #ccc;
+  margin-left: 10px; /* Offset the border line */
+}
