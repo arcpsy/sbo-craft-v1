@@ -5,22 +5,21 @@ import {
   buildCraftingTree,
   calculateTotalRawMaterials,
   type TreeNode,
-} from '../utils/craftingTreeUtils';
+  type BuildTreeResult,
+} from '../utils/craftingTreeUtils'; // ✅ Import BuildTreeResult
 import type { Recipe, BlacksmithingAcquisition } from '../types';
 
 import './CraftingTreeViewer.css';
 
-// ✅ NEW: Create a separate component for rendering individual TreeNodes
 interface TreeNodeProps {
   node: TreeNode;
   depth: number;
 }
 
 const TreeNodeComponent: React.FC<TreeNodeProps> = ({ node, depth }) => {
-  const [isExpanded, setIsExpanded] = useState(true); // Default to expanded
+  const [isExpanded, setIsExpanded] = useState(true);
   const indentation = { marginLeft: `${depth * 20}px` };
 
-  // Determine if the toggle button should be shown
   const showToggleButton =
     node.isCrafted && node.children && node.children.length > 0;
 
@@ -33,8 +32,7 @@ const TreeNodeComponent: React.FC<TreeNodeProps> = ({ node, depth }) => {
       <div className='node-header'>
         {showToggleButton && (
           <button onClick={handleToggle} className='toggle-button'>
-            {isExpanded ? '▼' : '►'}{' '}
-            {/* Down arrow for expanded, right for collapsed */}
+            {isExpanded ? '▼' : '►'}
           </button>
         )}
         <span className={node.isCrafted ? 'crafted-item' : 'raw-material'}>
@@ -44,17 +42,16 @@ const TreeNodeComponent: React.FC<TreeNodeProps> = ({ node, depth }) => {
         {!node.isCrafted && (
           <span className='node-type-label'> [Raw Material]</span>
         )}
-        {node.children &&
-          node.children.some(
-            (child) => child.itemName === 'CYCLE DETECTED!',
-          ) && <span className='cycle-detected-label'> [Cycle Detected!]</span>}
+        {/* Simplified check for cycle in display, as isCyclic is now on the node */}
+        {node.isCyclic &&
+          node.itemName !== 'CYCLE DETECTED!' && ( // ✅ Display only for the actual cyclic item
+            <span className='cycle-detected-label'> [Cyclic Dependency!]</span>
+          )}
       </div>
 
-      {/* Conditionally render children based on isExpanded state */}
       {isExpanded && node.children && node.children.length > 0 && (
         <ul>
           {node.children.map((child, index) => (
-            // Use index as key here, as itemName might not be unique if a cycle is detected and the placeholder is used multiple times
             <TreeNodeComponent
               key={child.itemName + depth + index}
               node={child}
@@ -74,6 +71,7 @@ const CraftingTreeViewer: React.FC = () => {
   const [totalRawMaterials, setTotalRawMaterials] = useState<
     Map<string, number>
   >(new Map());
+  const [detectedCycles, setDetectedCycles] = useState<string[][]>([]); // ✅ New state for detected cycles
 
   const blacksmithingRecipes = recipes.filter(
     (recipe) => recipe.acquisition.type === 'blacksmithing',
@@ -81,8 +79,9 @@ const CraftingTreeViewer: React.FC = () => {
 
   useEffect(() => {
     if (selectedRootItem) {
-      const tree = buildCraftingTree(selectedRootItem, recipes);
+      const { tree, cycles } = buildCraftingTree(selectedRootItem, recipes); // ✅ Destructure result
       setCraftingTree(tree);
+      setDetectedCycles(cycles); // ✅ Set detected cycles
 
       if (tree) {
         setTotalRawMaterials(calculateTotalRawMaterials(tree));
@@ -92,11 +91,9 @@ const CraftingTreeViewer: React.FC = () => {
     } else {
       setCraftingTree(null);
       setTotalRawMaterials(new Map());
+      setDetectedCycles([]); // ✅ Clear cycles
     }
   }, [selectedRootItem, recipes]);
-
-  // Removed renderTreeNode function, now using TreeNodeComponent directly
-  // const renderTreeNode = (node: TreeNode, depth: number = 0) => { /* ... */ };
 
   return (
     <div className='crafting-tree-viewer-container card'>
@@ -125,12 +122,35 @@ const CraftingTreeViewer: React.FC = () => {
         </p>
       )}
 
+      {/* ✅ NEW: Display Detected Cycles */}
+      {detectedCycles.length > 0 && (
+        <div className='cycle-warning card'>
+          <h3>
+            <i className='fas fa-exclamation-triangle'></i> Detected Crafting
+            Cycles!
+          </h3>
+          <p>
+            The following circular dependencies were found in your recipes. This
+            means an item indirectly requires itself, preventing it from being
+            crafted.
+          </p>
+          <ul>
+            {detectedCycles.map((cyclePath, index) => (
+              <li key={index}>
+                <code>{cyclePath.join(' &#8594; ')}</code>{' '}
+                {/* Uses HTML entity for arrow */}
+              </li>
+            ))}
+          </ul>
+          <p>Please review and correct these recipes.</p>
+        </div>
+      )}
+
       {/* Crafting Tree Display */}
       {craftingTree && (
         <div className='crafting-tree-display'>
           <h3>Tree for: {craftingTree.itemName}</h3>
           <ul className='tree-root'>
-            {/* ✅ Render the root node using the new TreeNodeComponent */}
             <TreeNodeComponent node={craftingTree} depth={0} />
           </ul>
         </div>

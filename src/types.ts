@@ -1,17 +1,23 @@
 // src/types.ts
 
-// Define fixed types for ItemType for strictness
-export type ItemType =
-  | 'Items'
-  | 'One Handed'
-  | 'Two Handed'
-  | 'Rapier'
-  | 'Dagger'
-  | 'Lower Headwear'
-  | 'Upper Headwear'
-  | 'Armor'
-  | 'Shields'
-  | 'Overlay';
+// Define ItemType as a CONST OBJECT for runtime values
+// This allows us to use Object.values() on it in components
+export const ItemType = {
+  Items: 'Items',
+  OneHanded: 'One Handed',
+  TwoHanded: 'Two Handed',
+  Rapier: 'Rapier',
+  Dagger: 'Dagger',
+  LowerHeadwear: 'Lower Headwear',
+  UpperHeadwear: 'Upper Headwear',
+  Armor: 'Armor',
+  Shields: 'Shields',
+  Overlay: 'Overlay',
+} as const; // 'as const' makes it a "readonly" type, ensuring literal string values
+
+// Now, derive the ItemType TYPE from the ItemType CONST OBJECT
+// This creates a union type of all its string values for strict type checking
+export type ItemType = (typeof ItemType)[keyof typeof ItemType];
 
 // Ingredient for blacksmithing
 export interface Ingredient {
@@ -22,10 +28,10 @@ export interface Ingredient {
 // Discriminant union for different acquisition types
 export type AcquisitionType =
   | 'blacksmithing'
-  | 'mob_drop'
+  | 'mob-drop' // Changed back to hyphenated for consistency with previous use
   | 'merchant'
   | 'mining'
-  | 'quest_rewards'; // ✅ Added new acquisition type
+  | 'quest-rewards';
 
 // Base Acquisition interface (used for the discriminant property)
 interface BaseAcquisition {
@@ -39,31 +45,30 @@ export interface BlacksmithingAcquisition extends BaseAcquisition {
 }
 
 export interface MobDropAcquisition extends BaseAcquisition {
-  type: 'mob_drop';
-  sources: {
+  type: 'mob-drop';
+  mobSources: {
+    // Changed 'sources' to 'mobSources' for clarity
     mobName: string;
-    mobType: 'Boss' | 'Miniboss' | 'Minion'; // ✅ Added mobType with fixed categories
+    mobType: 'Boss' | 'Miniboss' | 'Minion';
     floor: number;
   }[];
-  // dropType removed based on discussion
 }
 
 export interface MerchantAcquisition extends BaseAcquisition {
   type: 'merchant';
-  itemWorth?: number; // Cost in "Col"
-  merchantFloor?: number; // ✅ Added merchantFloor, will be "F" + number in display
+  itemWorthCol?: number; // Changed from itemWorth to itemWorthCol for clarity with currency
+  merchantFloor?: number;
 }
 
 export interface MiningAcquisition extends BaseAcquisition {
   type: 'mining';
-  mineableFloor?: number; // Will be "F" + number in display
+  mineableFloor?: number;
 }
 
-// ✅ New interface for Quest Reward Acquisition
 export interface QuestRewardAcquisition extends BaseAcquisition {
-  type: 'quest_rewards';
-  questName: string; // Unique quest name
-  questFloor?: number; // Optional, will be "F" + number in display
+  type: 'quest-rewards';
+  questName: string;
+  questFloor?: number;
 }
 
 // Union type for all possible acquisition methods
@@ -72,11 +77,11 @@ export type Acquisition =
   | MobDropAcquisition
   | MerchantAcquisition
   | MiningAcquisition
-  | QuestRewardAcquisition; // ✅ Included new acquisition type
+  | QuestRewardAcquisition;
 
 // Main Recipe interface
 export interface Recipe {
   itemName: string;
-  itemType: ItemType; // Using the ItemType union
+  itemType: ItemType; // Using the ItemType derived type
   acquisition: Acquisition;
 }

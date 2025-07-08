@@ -1,19 +1,20 @@
 // src/store/useRecipeStore.ts
 import { create } from 'zustand';
 import { devtools, persist, createJSONStorage } from 'zustand/middleware';
-import type { Recipe } from '../types'; // This import makes the store aware of the updated Recipe type structure
+import type { Recipe } from '../types';
 
 // Define the state shape for our recipe store
 interface RecipeState {
   recipes: Recipe[];
-  selectedRecipeIds: Set<string>;
+  selectedRecipeIds: Set<string>; // This local state in the store is fine for its own internal logic
   addRecipe: (recipe: Recipe) => void;
   updateRecipe: (itemName: string, updatedRecipe: Recipe) => void;
   deleteRecipe: (itemName: string) => void;
   setRecipes: (recipes: Recipe[]) => void;
   toggleRecipeSelection: (itemName: string) => void;
   clearRecipeSelection: () => void;
-  deleteSelectedRecipes: () => void;
+  // ✅ FIX: Change deleteSelectedRecipes to accept an array of itemNames
+  deleteSelectedRecipes: (itemNames: string[]) => void;
   selectAllRecipes: () => void;
 }
 
@@ -29,9 +30,6 @@ export const useRecipeStore = create<RecipeState>()(
         // Actions
         addRecipe: (recipe) =>
           set((state) => {
-            // Uniqueness check for itemName is handled in RecipeForm.tsx
-            // If you wanted a store-level uniqueness check, it would go here,
-            // but for immediate user feedback, form-level is better.
             return { recipes: [...state.recipes, recipe] };
           }),
 
@@ -74,11 +72,14 @@ export const useRecipeStore = create<RecipeState>()(
             selectedRecipeIds: new Set<string>(),
           })),
 
-        deleteSelectedRecipes: () =>
+        // ✅ FIX: Implement deleteSelectedRecipes to use the passed itemNames
+        deleteSelectedRecipes: (itemNamesToDelete: string[]) =>
           set((state) => ({
             recipes: state.recipes.filter(
-              (recipe) => !state.selectedRecipeIds.has(recipe.itemName),
+              // Keep recipes whose names are NOT in the list of names to delete
+              (recipe) => !itemNamesToDelete.includes(recipe.itemName),
             ),
+            // Clear selection in the store's internal state as well
             selectedRecipeIds: new Set<string>(),
           })),
 

@@ -1,6 +1,6 @@
 // src/utils/craftingTreeUtils.ts
 
-import type { Recipe, Ingredient, BlacksmithingAcquisition } from '../types'; // Ensure 'type' is used here
+import type { Recipe, Ingredient, BlacksmithingAcquisition } from '../types';
 
 /**
  * Interface representing a node in the crafting dependency tree.
@@ -11,6 +11,16 @@ export interface TreeNode {
   quantity: number; // The quantity of this item needed for its direct parent.
   children?: TreeNode[]; // Optional: Array of child nodes (ingredients that are themselves crafted).
   isCrafted: boolean; // True if this item has its own crafting recipe (Blacksmithing).
+  isCyclic?: boolean; // ✅ NEW: Optional flag to mark nodes involved in a cycle
+}
+
+/**
+ * Interface for the result of building a crafting tree.
+ */
+export interface BuildTreeResult {
+  // ✅ NEW: Interface to return both tree and cycles
+  tree: TreeNode | null;
+  cycles: string[][]; // Each inner array represents a detected cycle path
 }
 
 /**
@@ -35,19 +45,21 @@ const findRecipeByName = (
 export const buildCraftingTree = (
   rootItemName: string,
   allRecipes: Recipe[],
-): TreeNode | null => {
+): BuildTreeResult => {
+  // ✅ Changed return type
   const rootRecipe = findRecipeByName(rootItemName, allRecipes);
 
-  // If the root item doesn't exist or isn't a blacksmithing recipe, it cannot be a crafting tree root.
+  const detectedCycles: string[][] = []; // ✅ NEW: Array to store detected cycles
+
   if (!rootRecipe || rootRecipe.acquisition.type !== 'blacksmithing') {
     console.warn(
       `Cannot build crafting tree for '${rootItemName}': Not found or not a blacksmithing recipe.`,
     );
-    return null;
+    return { tree: null, cycles: [] }; // ✅ Return new structure
   }
 
   // Use a Set to keep track of items currently in the recursion path to detect cycles
-  const visited = new Set<string>();
+  const recursionPath: string[] = []; // ✅ Changed to array to store full path for cycle reporting
 
   /**
    * Recursive helper function to build a single node and its children.
@@ -60,27 +72,33 @@ export const buildCraftingTree = (
     requiredQuantity: number,
   ): TreeNode => {
     // Cycle detection: If we visit an item that's already in our current path, it's a cycle.
-    if (visited.has(currentItemName)) {
+    const cycleStartIndex = recursionPath.indexOf(currentItemName);
+    if (cycleStartIndex !== -1) {
+      const cyclePath = recursionPath.slice(cycleStartIndex);
+      cyclePath.push(currentItemName); // Add the current item to close the loop
+      detectedCycles.push(cyclePath); // Store the full cycle path
+
       console.error(
-        `Cycle detected in crafting tree: '${currentItemName}' is required by itself.`,
+        `Cycle detected in crafting tree: ${cyclePath.join(' -> ')}`,
       );
       // Return a basic node to avoid infinite loop, marking it as part of a cycle
       return {
         itemName: currentItemName,
         quantity: requiredQuantity,
-        isCrafted: true, // It's part of a crafting process, but circular
+        isCrafted: true,
+        isCyclic: true, // ✅ Mark as cyclic
         children: [
           {
             itemName: 'CYCLE DETECTED!',
             quantity: 1,
-            isCrafted: false, // Mark as a special informational node
+            isCrafted: false,
+            isCyclic: true,
           },
         ],
       };
     }
 
-    visited.add(currentItemName);
-
+    recursionPath.push(currentItemName); // Add current item to path
     const recipe = findRecipeByName(currentItemName, allRecipes);
 
     const node: TreeNode = {
@@ -97,14 +115,14 @@ export const buildCraftingTree = (
       );
     }
 
-    // After processing children, remove from visited set to allow it in other branches
-    visited.delete(currentItemName);
+    recursionPath.pop(); // ✅ Remove from path when done with this branch
 
     return node;
   };
 
   // Start building the tree from the root recipe
-  return buildNode(rootRecipe.itemName, 1); // The root item is '1' of itself
+  const tree = buildNode(rootRecipe.itemName, 1);
+  return { tree, cycles: detectedCycles }; // ✅ Return both tree and cycles
 };
 
 /**
@@ -124,11 +142,16 @@ export const calculateTotalRawMaterials = (
    * the ore's quantity for the sword is 2 * 3 = 6).
    */
   const traverse = (node: TreeNode, multiplier: number) => {
+    // Skip cycle detected nodes from raw material calculations to avoid unintended sums
+    if (node.itemName === 'CYCLE DETECTED!') {
+      return;
+    }
+
     // Calculate the actual quantity needed at this level based on previous multipliers
     const actualQuantity = node.quantity * multiplier;
 
-    // If it's a raw material (not crafted and not a cycle indicator)
-    if (!node.isCrafted && node.itemName !== 'CYCLE DETECTED!') {
+    // If it's a raw material (not crafted)
+    if (!node.isCrafted) {
       // Add or update its total quantity
       totals.set(
         node.itemName,

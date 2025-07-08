@@ -132,3 +132,43 @@
   border-left: 1px solid #ccc;
   margin-left: 10px; /* Offset the border line */
 }
+
+.cycle-warning {
+  background-color: #ffe0e6; /* Light red/pink background */
+  border: 1px solid #dc3545; /* Red border */
+  color: #dc3545; /* Red text */
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.cycle-warning h3 {
+  color: #dc3545;
+  margin-top: 0;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.cycle-warning h3 .fas {
+  /* Font Awesome icon */
+  margin-right: 10px;
+  font-size: 1.2em;
+}
+
+.cycle-warning ul {
+  list-style-type: none; /* No bullets for cycles */
+  padding-left: 0;
+  margin-bottom: 10px;
+}
+
+.cycle-warning li {
+  font-family: monospace; /* Monospaced font for paths */
+  background-color: #ffcccc;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  border: 1px solid #ffaaad;
+  word-break: break-all; /* Ensure long paths wrap */
+}
