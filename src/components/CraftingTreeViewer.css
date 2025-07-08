@@ -1,0 +1,75 @@
+/* src/components/CraftingTreeViewer.css */
+
+.crafting-tree-viewer-container {
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: #ffffff; /* Added a background for clarity */
+}
+
+.crafting-tree-viewer-container h2 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.crafting-tree-viewer-container .form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.crafting-tree-viewer-container .form-group select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin-bottom: 15px;
+  box-sizing: border-box; /* Ensures padding doesn't increase width */
+}
+
+.crafting-tree-viewer-container .crafting-tree-display {
+  margin-top: 20px;
+  border: 1px solid #eee;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.crafting-tree-viewer-container .tree-root,
+.crafting-tree-viewer-container .tree-root ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.crafting-tree-viewer-container .tree-root ul {
+  border-left: 1px solid #ccc; /* Visual line for nested items */
+  padding-left: 10px;
+}
+
+.crafting-tree-viewer-container .tree-root li {
+  line-height: 1.6;
+  padding: 2px 0;
+}
+
+.crafting-tree-viewer-container .crafted-item {
+  font-weight: bold;
+  color: #007bff; /* Blue for crafted items */
+}
+
+.crafting-tree-viewer-container .raw-material {
+  color: #28a745; /* Green for raw materials */
+}
+
+.crafting-tree-viewer-container .node-type-label {
+  font-size: 0.8em;
+  color: #6c757d;
+  margin-left: 5px;
+}
+
+.crafting-tree-viewer-container .cycle-detected-label {
+  font-size: 0.8em;
+  color: #dc3545; /* Red for cycle detection */
+  font-weight: bold;
+  margin-left: 5px;
+}

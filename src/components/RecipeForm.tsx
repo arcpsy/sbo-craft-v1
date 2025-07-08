@@ -1,20 +1,18 @@
 // src/components/RecipeForm.tsx
 import React, { useState, useEffect } from 'react';
 import type {
-  // <-- ensure 'type' is here for all type imports
   Recipe,
   Ingredient,
   Acquisition,
+  ItemType, // ✅ Import ItemType
+  AcquisitionType, // ✅ Import AcquisitionType
   BlacksmithingAcquisition,
   MobDropAcquisition,
   MerchantAcquisition,
   MiningAcquisition,
+  QuestRewardAcquisition, // ✅ Import new QuestRewardAcquisition
 } from '../types';
 import { useRecipeStore } from '../store/useRecipeStore';
-
-// Helper function to generate a unique ID for temporary keys (e.g., ingredients, mob sources)
-let tempIdCounter = 0;
-const generateUniqueTempId = () => `temp-${tempIdCounter++}`;
 
 interface RecipeFormProps {
   editingItemName: string | null;
@@ -25,35 +23,77 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
   editingItemName,
   onFormReset,
 }) => {
+  const recipes = useRecipeStore((state) => state.recipes); // Get all recipes for uniqueness check
   const addRecipe = useRecipeStore((state) => state.addRecipe);
   const updateRecipe = useRecipeStore((state) => state.updateRecipe);
-  const recipes = useRecipeStore((state) => state.recipes); // Used for finding recipe to edit
 
-  // State for the form fields
+  // --- State for core recipe fields ---
   const [itemName, setItemName] = useState<string>('');
-  const [itemType, setItemType] = useState<string>('');
-  const [acquisitionType, setAcquisitionType] = useState<
-    Acquisition['type'] | ''
-  >('');
+  const [itemType, setItemType] = useState<ItemType>('Items'); // Default to 'Items'
+  const [acquisitionType, setAcquisitionType] =
+    useState<AcquisitionType>('blacksmithing'); // Default to 'blacksmithing'
 
-  // State for specific acquisition details
+  // --- State for acquisition-specific fields ---
+  // Blacksmithing
   const [ingredients, setIngredients] = useState<
     (Ingredient & { id: string })[]
-  >([]); // Blacksmithing
+  >([]);
   const [smithingSkillRequired, setSmithingSkillRequired] = useState<
     number | ''
-  >(''); // Blacksmithing
-  const [mobSources, setMobSources] = useState<
-    (MobDropAcquisition['sources'][0] & { id: string })[]
-  >([]); // Mob Drop
-  const [dropType, setDropType] = useState<MobDropAcquisition['dropType'] | ''>(
-    '',
-  ); // Mob Drop
-  const [itemWorth, setItemWorth] = useState<number | ''>(''); // Merchant
-  const [merchantLocation, setMerchantLocation] = useState<string>(''); // Merchant
-  const [mineableFloor, setMineableFloor] = useState<number | ''>(''); // Mining
+  >('');
 
-  // Effect to populate form when editing an existing recipe, or clear it
+  // Mob Drop
+  const [mobSources, setMobSources] = useState<
+    ({
+      mobName: string;
+      mobType: 'Boss' | 'Miniboss' | 'Minion';
+      floor: number;
+    } & {
+      id: string;
+    })[]
+  >([]);
+  // dropType removed based on discussion
+
+  // Merchant
+  const [itemWorth, setItemWorth] = useState<number | ''>('');
+  const [merchantFloor, setMerchantFloor] = useState<number | ''>(''); // ✅ Added merchantFloor
+
+  // Mining
+  const [mineableFloor, setMineableFloor] = useState<number | ''>('');
+
+  // Quest Rewards (✅ New State variables)
+  const [questName, setQuestName] = useState<string>('');
+  const [questFloor, setQuestFloor] = useState<number | ''>('');
+
+  // --- Helper for generating unique temporary IDs for dynamic lists ---
+  const [tempIdCounter, setTempIdCounter] = useState(0);
+  const generateUniqueTempId = () => {
+    setTempIdCounter((prev) => prev + 1);
+    return `temp-${tempIdCounter}`;
+  };
+
+  // --- Form Reset Logic ---
+  const resetAllFormFields = () => {
+    setItemName('');
+    setItemType('Items');
+    setAcquisitionType('blacksmithing');
+    setIngredients([]);
+    setSmithingSkillRequired('');
+    setMobSources([]);
+    setItemWorth('');
+    setMerchantFloor(''); // ✅ Reset merchantFloor
+    setMineableFloor('');
+    setQuestName(''); // ✅ Reset questName
+    setQuestFloor(''); // ✅ Reset questFloor
+    setTempIdCounter(0); // Reset counter on form clear
+  };
+
+  const handleResetForm = () => {
+    resetAllFormFields();
+    onFormReset(); // Notify parent component (App.tsx) to clear editing state
+  };
+
+  // --- Effect for Editing Mode ---
   useEffect(() => {
     if (editingItemName) {
       const recipeToEdit = recipes.find((r) => r.itemName === editingItemName);
@@ -62,92 +102,66 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         setItemType(recipeToEdit.itemType);
         setAcquisitionType(recipeToEdit.acquisition.type);
 
-        // Reset temporary ID counter before populating for consistent keys during edit
-        tempIdCounter = 0;
-
-        // Populate acquisition-specific fields
+        // Populate acquisition-specific fields based on type
         switch (recipeToEdit.acquisition.type) {
           case 'blacksmithing':
+            const blacksmithingAcq =
+              recipeToEdit.acquisition as BlacksmithingAcquisition;
             setIngredients(
-              (
-                recipeToEdit.acquisition as BlacksmithingAcquisition
-              ).ingredients.map((ing) => ({
+              blacksmithingAcq.ingredients.map((ing) => ({
                 ...ing,
                 id: generateUniqueTempId(),
               })),
             );
             setSmithingSkillRequired(
-              (recipeToEdit.acquisition as BlacksmithingAcquisition)
-                .smithingSkillRequired || '',
+              blacksmithingAcq.smithingSkillRequired ?? '',
             );
             break;
           case 'mob_drop':
+            const mobDropAcq = recipeToEdit.acquisition as MobDropAcquisition;
             setMobSources(
-              (recipeToEdit.acquisition as MobDropAcquisition).sources.map(
-                (src) => ({
-                  ...src,
-                  id: generateUniqueTempId(),
-                }),
-              ),
+              mobDropAcq.sources.map((source) => ({
+                ...source,
+                id: generateUniqueTempId(),
+              })),
             );
-            setDropType(
-              (recipeToEdit.acquisition as MobDropAcquisition).dropType || '',
-            );
+            // dropType removed
             break;
           case 'merchant':
-            setItemWorth(
-              (recipeToEdit.acquisition as MerchantAcquisition).itemWorth || '',
-            );
-            setMerchantLocation(
-              (recipeToEdit.acquisition as MerchantAcquisition)
-                .merchantLocation || '',
-            );
+            const merchantAcq = recipeToEdit.acquisition as MerchantAcquisition;
+            setItemWorth(merchantAcq.itemWorth ?? '');
+            setMerchantFloor(merchantAcq.merchantFloor ?? ''); // ✅ Populate merchantFloor
             break;
           case 'mining':
-            setMineableFloor(
-              (recipeToEdit.acquisition as MiningAcquisition).mineableFloor ||
-                '',
-            );
+            const miningAcq = recipeToEdit.acquisition as MiningAcquisition;
+            setMineableFloor(miningAcq.mineableFloor ?? '');
+            break;
+          case 'quest_rewards': // ✅ Populate Quest Rewards fields
+            const questRewardAcq =
+              recipeToEdit.acquisition as QuestRewardAcquisition;
+            setQuestName(questRewardAcq.questName);
+            setQuestFloor(questRewardAcq.questFloor ?? '');
+            break;
+          default:
             break;
         }
       }
     } else {
-      // When editingItemName becomes null (i.e., not editing), clear the form
+      // If not editing, reset the form
       resetAllFormFields();
     }
-  }, [editingItemName, recipes]); // Depend on editingItemName and recipes
+  }, [editingItemName, recipes]); // Depend on editingItemName and recipes for updates
 
-  // Function to reset all form fields (internal helper)
-  const resetAllFormFields = () => {
-    setItemName('');
-    setItemType('');
-    setAcquisitionType('');
-    setIngredients([]);
-    setSmithingSkillRequired('');
-    setMobSources([]);
-    setDropType('');
-    setItemWorth('');
-    setMerchantLocation('');
-    setMineableFloor('');
-    tempIdCounter = 0; // Reset counter for new items
-  };
-
-  // Public reset function called by parent or on submit/cancel
-  const handleResetForm = () => {
-    resetAllFormFields();
-    onFormReset(); // Notify parent component to clear editing state
-  };
-
-  // Handlers for adding/removing ingredients (for blacksmithing)
+  // --- Handlers for dynamic ingredient lists ---
   const handleAddIngredient = () => {
-    setIngredients([
-      ...ingredients,
-      { id: generateUniqueTempId(), name: '', quantity: 1 },
+    setIngredients((prev) => [
+      ...prev,
+      { id: generateUniqueTempId(), name: '', quantity: 0 },
     ]);
   };
 
   const handleRemoveIngredient = (id: string) => {
-    setIngredients(ingredients.filter((ing) => ing.id !== id));
+    setIngredients((prev) => prev.filter((ing) => ing.id !== id));
   };
 
   const handleIngredientChange = (
@@ -155,131 +169,189 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
     field: 'name' | 'quantity',
     value: string | number,
   ) => {
-    setIngredients(
-      ingredients.map((ing) =>
+    setIngredients((prev) =>
+      prev.map((ing) =>
         ing.id === id
-          ? {
-              ...ing,
-              [field]: field === 'quantity' ? Number(value) : String(value),
-            }
+          ? { ...ing, [field]: field === 'quantity' ? Number(value) : value }
           : ing,
       ),
     );
   };
 
-  // Handlers for adding/removing mob sources
+  // --- Handlers for dynamic mob source lists ---
   const handleAddMobSource = () => {
-    setMobSources([
-      ...mobSources,
-      { id: generateUniqueTempId(), mobName: '', floor: 1 },
+    setMobSources((prev) => [
+      ...prev,
+      { id: generateUniqueTempId(), mobName: '', mobType: 'Minion', floor: 0 }, // ✅ Default mobType
     ]);
   };
 
   const handleRemoveMobSource = (id: string) => {
-    setMobSources(mobSources.filter((src) => src.id !== id));
+    setMobSources((prev) => prev.filter((src) => src.id !== id));
   };
 
   const handleMobSourceChange = (
     id: string,
-    field: 'mobName' | 'floor',
+    field: 'mobName' | 'mobType' | 'floor', // ✅ Updated fields
     value: string | number,
   ) => {
-    setMobSources(
-      mobSources.map((src) =>
+    setMobSources((prev) =>
+      prev.map((src) =>
         src.id === id
-          ? {
-              ...src,
-              [field]: field === 'floor' ? Number(value) : String(value),
-            }
+          ? { ...src, [field]: field === 'floor' ? Number(value) : value }
           : src,
       ),
     );
   };
 
+  // --- Form Submission Handler ---
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Basic validation
-    if (!itemName || !itemType || !acquisitionType) {
-      alert('Please fill in all primary fields.');
+    // --- Validation ---
+    if (!itemName.trim() || !itemType || !acquisitionType) {
+      alert('Please fill in all core recipe fields.');
+      return;
+    }
+
+    // Check for unique item name
+    const isDuplicateName = recipes.some(
+      (r) => r.itemName === itemName && r.itemName !== editingItemName,
+    );
+    if (isDuplicateName) {
+      alert(
+        `Recipe with name "${itemName}" already exists. Please use a unique name.`,
+      );
       return;
     }
 
     let acquisition: Acquisition;
+
     switch (acquisitionType) {
       case 'blacksmithing':
-        if (
-          ingredients.length === 0 ||
-          ingredients.some((ing) => !ing.name || ing.quantity <= 0)
-        ) {
+        if (ingredients.length === 0) {
+          alert('Blacksmithing recipes must have at least one ingredient.');
+          return;
+        }
+        if (ingredients.some((ing) => !ing.name.trim() || ing.quantity <= 0)) {
           alert(
-            'Blacksmithing recipes require at least one valid ingredient with quantity > 0.',
+            'All ingredients must have a name and a quantity greater than 0.',
           );
           return;
         }
         acquisition = {
           type: 'blacksmithing',
-          ingredients: ingredients.map(({ id, ...rest }) => rest), // Remove temp ID
-          smithingSkillRequired:
-            smithingSkillRequired !== ''
-              ? Number(smithingSkillRequired)
-              : undefined,
-        } as BlacksmithingAcquisition;
+          ingredients: ingredients.map(({ id, ...rest }) => rest), // Remove temp id
+          smithingSkillRequired: smithingSkillRequired
+            ? Number(smithingSkillRequired)
+            : undefined,
+        };
         break;
       case 'mob_drop':
+        if (mobSources.length === 0) {
+          alert('Mob drop recipes must have at least one mob source.');
+          return;
+        }
         if (
-          mobSources.length === 0 ||
-          mobSources.some((src) => !src.mobName || src.floor <= 0)
+          mobSources.some(
+            (src) => !src.mobName.trim() || !src.mobType || src.floor <= 0, // ✅ Validate mobType and floor
+          )
         ) {
           alert(
-            'Mob drop recipes require at least one valid source with floor > 0.',
+            'All mob sources must have a name, type, and floor greater than 0.',
           );
           return;
         }
         acquisition = {
           type: 'mob_drop',
-          sources: mobSources.map(({ id, ...rest }) => rest), // Remove temp ID
-          dropType: dropType !== '' ? dropType : undefined,
-        } as MobDropAcquisition;
+          sources: mobSources.map(({ id, ...rest }) => ({
+            ...rest,
+            floor: Number(rest.floor), // Ensure floor is number
+          })), // Remove temp id
+        };
         break;
       case 'merchant':
+        if (itemWorth === '' || Number(itemWorth) <= 0) {
+          alert('Merchant items must have a worth greater than 0.');
+          return;
+        }
+        if (merchantFloor !== '' && Number(merchantFloor) <= 0) {
+          // ✅ Validate merchantFloor
+          alert(
+            'Merchant floor must be a number greater than 0 or left empty.',
+          );
+          return;
+        }
         acquisition = {
           type: 'merchant',
-          itemWorth: itemWorth !== '' ? Number(itemWorth) : undefined,
-          merchantLocation: merchantLocation || undefined,
-        } as MerchantAcquisition;
+          itemWorth: Number(itemWorth),
+          merchantFloor: merchantFloor ? Number(merchantFloor) : undefined, // ✅ Add merchantFloor
+        };
         break;
       case 'mining':
+        if (mineableFloor !== '' && Number(mineableFloor) <= 0) {
+          alert(
+            'Mineable floor must be a number greater than 0 or left empty.',
+          );
+          return;
+        }
         acquisition = {
           type: 'mining',
-          mineableFloor:
-            mineableFloor !== '' ? Number(mineableFloor) : undefined,
-        } as MiningAcquisition;
+          mineableFloor: mineableFloor ? Number(mineableFloor) : undefined,
+        };
+        break;
+      case 'quest_rewards': // ✅ Handle new acquisition type
+        if (!questName.trim()) {
+          alert('Quest reward recipes must have a quest name.');
+          return;
+        }
+        // Unique Quest Name Validation
+        const isDuplicateQuestName = recipes.some(
+          (r) =>
+            r.acquisition.type === 'quest_rewards' &&
+            (r.acquisition as QuestRewardAcquisition).questName === questName &&
+            r.itemName !== editingItemName, // Allow editing current item without quest name conflict
+        );
+        if (isDuplicateQuestName) {
+          alert(
+            `A quest reward with quest name "${questName}" already exists.`,
+          );
+          return;
+        }
+        if (questFloor !== '' && Number(questFloor) <= 0) {
+          alert('Quest floor must be a number greater than 0 or left empty.');
+          return;
+        }
+        acquisition = {
+          type: 'quest_rewards',
+          questName: questName,
+          questFloor: questFloor ? Number(questFloor) : undefined,
+        };
         break;
       default:
-        alert('Please select a valid acquisition type.');
+        alert('Invalid acquisition type selected.');
         return;
     }
 
     const newRecipe: Recipe = {
-      itemName,
-      itemType,
-      acquisition,
+      itemName: itemName,
+      itemType: itemType,
+      acquisition: acquisition,
     };
 
     if (editingItemName) {
       updateRecipe(editingItemName, newRecipe);
-      alert(`Recipe "${itemName}" updated!`);
+      alert(`Recipe '${itemName}' updated!`);
     } else {
       addRecipe(newRecipe);
-      alert(`Recipe "${itemName}" added!`);
+      alert(`Recipe '${itemName}' added!`);
     }
 
-    handleResetForm(); // Call the public reset function
+    handleResetForm(); // Clear form after submission
   };
 
   return (
-    <form id='recipe-form' onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit}>
       <div className='form-group'>
         <label htmlFor='itemName'>Item Name:</label>
         <input
@@ -297,17 +369,20 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         <select
           id='itemTypeSelect'
           value={itemType}
-          onChange={(e) => setItemType(e.target.value)}
+          onChange={(e) => setItemType(e.target.value as ItemType)}
           required
         >
-          <option value=''>Select a type</option>
-          <option value='Weapon'>Weapon</option>
+          {/* ✅ Updated ItemType options */}
+          <option value='Items'>Items</option>
+          <option value='One Handed'>One Handed</option>
+          <option value='Two Handed'>Two Handed</option>
+          <option value='Rapier'>Rapier</option>
+          <option value='Dagger'>Dagger</option>
+          <option value='Lower Headwear'>Lower Headwear</option>
+          <option value='Upper Headwear'>Upper Headwear</option>
           <option value='Armor'>Armor</option>
-          <option value='Material'>Material</option>
-          <option value='Potion'>Potion</option>
-          <option value='Key Item'>Key Item</option>
-          <option value='Ore'>Ore</option>
-          {/* Add more types as needed */}
+          <option value='Shields'>Shields</option>
+          <option value='Overlay'>Overlay</option>
         </select>
       </div>
 
@@ -316,39 +391,32 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         <select
           id='acquisitionTypeSelect'
           value={acquisitionType}
-          onChange={(e) => {
-            setAcquisitionType(e.target.value as Acquisition['type'] | '');
-            // Reset specific acquisition fields when type changes
-            setIngredients([]);
-            setSmithingSkillRequired('');
-            setMobSources([]);
-            setDropType('');
-            setItemWorth('');
-            setMerchantLocation('');
-            setMineableFloor('');
-            tempIdCounter = 0; // Reset counter for new entries
-          }}
+          onChange={(e) =>
+            setAcquisitionType(e.target.value as AcquisitionType)
+          }
           required
         >
-          <option value=''>Select an acquisition method</option>
+          {/* ✅ Updated AcquisitionType options */}
           <option value='blacksmithing'>Blacksmithing (Crafted)</option>
           <option value='mob_drop'>Mob Drop</option>
           <option value='merchant'>Merchant Purchase</option>
           <option value='mining'>Mining</option>
+          <option value='quest_rewards'>Quest Rewards</option>{' '}
+          {/* ✅ New option */}
         </select>
       </div>
 
-      {/* Conditional Rendering for Acquisition Details */}
+      {/* --- Conditional Fields based on Acquisition Type --- */}
       {acquisitionType === 'blacksmithing' && (
-        <div className='acquisition-details'>
+        <div className='acquisition-fields'>
           <h3>Blacksmithing Details</h3>
           <div className='form-group'>
-            <label htmlFor='smithingSkill'>
+            <label htmlFor='smithingSkillRequired'>
               Smithing Skill Required (Optional):
             </label>
             <input
               type='number'
-              id='smithingSkill'
+              id='smithingSkillRequired'
               value={smithingSkillRequired}
               onChange={(e) =>
                 setSmithingSkillRequired(
@@ -360,16 +428,7 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
           </div>
           <h4>Ingredients:</h4>
           {ingredients.map((ing) => (
-            <div
-              key={ing.id}
-              className='ingredient-input-group'
-              style={{
-                display: 'flex',
-                gap: '8px',
-                marginBottom: '8px',
-                alignItems: 'center',
-              }}
-            >
+            <div key={ing.id} className='ingredient-item'>
               <input
                 type='text'
                 placeholder='Ingredient Name'
@@ -378,117 +437,100 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                   handleIngredientChange(ing.id, 'name', e.target.value)
                 }
                 required
-                style={{ flex: 3 }}
               />
               <input
                 type='number'
                 placeholder='Quantity'
-                value={ing.quantity}
+                value={ing.quantity === 0 ? '' : ing.quantity}
                 onChange={(e) =>
                   handleIngredientChange(ing.id, 'quantity', e.target.value)
                 }
-                required
                 min='1'
-                style={{ flex: 1 }}
+                required
               />
               <button
                 type='button'
                 onClick={() => handleRemoveIngredient(ing.id)}
-                className='btn secondary-btn'
-                style={{ flex: 0.5 }}
+                className='btn secondary-btn remove-btn'
               >
-                <i className='fas fa-minus'></i>
+                Remove
               </button>
             </div>
           ))}
           <button
             type='button'
             onClick={handleAddIngredient}
-            className='btn secondary-btn btn-full-width'
+            className='btn secondary-btn'
           >
-            <i className='fas fa-plus'></i> Add Ingredient
+            Add Ingredient
           </button>
         </div>
       )}
 
       {acquisitionType === 'mob_drop' && (
-        <div className='acquisition-details'>
+        <div className='acquisition-fields'>
           <h3>Mob Drop Details</h3>
-          <div className='form-group'>
-            <label htmlFor='dropType'>Drop Type (Optional):</label>
-            <select
-              id='dropType'
-              value={dropType}
-              onChange={(e) =>
-                setDropType(
-                  e.target.value as MobDropAcquisition['dropType'] | '',
-                )
-              }
-            >
-              <option value=''>Select Drop Type</option>
-              <option value='Material'>Material</option>
-              <option value='Equipment'>Equipment</option>
-              <option value='Key Item'>Key Item</option>
-            </select>
-          </div>
           <h4>Mob Sources:</h4>
-          {mobSources.map((src) => (
-            <div
-              key={src.id}
-              className='mob-source-input-group'
-              style={{
-                display: 'flex',
-                gap: '8px',
-                marginBottom: '8px',
-                alignItems: 'center',
-              }}
-            >
+          {mobSources.map((source) => (
+            <div key={source.id} className='mob-source-item'>
               <input
                 type='text'
                 placeholder='Mob Name'
-                value={src.mobName}
+                value={source.mobName}
                 onChange={(e) =>
-                  handleMobSourceChange(src.id, 'mobName', e.target.value)
+                  handleMobSourceChange(source.id, 'mobName', e.target.value)
                 }
                 required
-                style={{ flex: 3 }}
               />
+              <select // ✅ Mob Type dropdown
+                value={source.mobType}
+                onChange={(e) =>
+                  handleMobSourceChange(
+                    source.id,
+                    'mobType',
+                    e.target.value as 'Boss' | 'Miniboss' | 'Minion',
+                  )
+                }
+                required
+              >
+                <option value='Boss'>Boss</option>
+                <option value='Miniboss'>Miniboss</option>
+                <option value='Minion'>Minion</option>
+              </select>
               <input
                 type='number'
                 placeholder='Floor'
-                value={src.floor}
+                value={source.floor === 0 ? '' : source.floor}
                 onChange={(e) =>
-                  handleMobSourceChange(src.id, 'floor', e.target.value)
+                  handleMobSourceChange(source.id, 'floor', e.target.value)
                 }
-                required
                 min='1'
-                style={{ flex: 1 }}
+                required
               />
               <button
                 type='button'
-                onClick={() => handleRemoveMobSource(src.id)}
-                className='btn secondary-btn'
-                style={{ flex: 0.5 }}
+                onClick={() => handleRemoveMobSource(source.id)}
+                className='btn secondary-btn remove-btn'
               >
-                <i className='fas fa-minus'></i>
+                Remove
               </button>
             </div>
           ))}
           <button
             type='button'
             onClick={handleAddMobSource}
-            className='btn secondary-btn btn-full-width'
+            className='btn secondary-btn'
           >
-            <i className='fas fa-plus'></i> Add Mob Source
+            Add Mob Source
           </button>
         </div>
       )}
 
       {acquisitionType === 'merchant' && (
-        <div className='acquisition-details'>
+        <div className='acquisition-fields'>
           <h3>Merchant Details</h3>
           <div className='form-group'>
-            <label htmlFor='itemWorth'>Item Worth (Optional):</label>
+            <label htmlFor='itemWorth'>Item Worth (Col):</label>
             <input
               type='number'
               id='itemWorth'
@@ -499,27 +541,33 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
                 )
               }
               min='0'
+              required
             />
           </div>
           <div className='form-group'>
-            <label htmlFor='merchantLocation'>
-              Merchant Location (Optional):
-            </label>
+            {' '}
+            {/* ✅ merchantFloor input */}
+            <label htmlFor='merchantFloor'>Merchant Floor:</label>
             <input
-              type='text'
-              id='merchantLocation'
-              value={merchantLocation}
-              onChange={(e) => setMerchantLocation(e.target.value)}
+              type='number'
+              id='merchantFloor'
+              value={merchantFloor}
+              onChange={(e) =>
+                setMerchantFloor(
+                  e.target.value === '' ? '' : Number(e.target.value),
+                )
+              }
+              min='1'
             />
           </div>
         </div>
       )}
 
       {acquisitionType === 'mining' && (
-        <div className='acquisition-details'>
+        <div className='acquisition-fields'>
           <h3>Mining Details</h3>
           <div className='form-group'>
-            <label htmlFor='mineableFloor'>Mineable Floor (Optional):</label>
+            <label htmlFor='mineableFloor'>Mineable Floor:</label>
             <input
               type='number'
               id='mineableFloor'
@@ -535,19 +583,50 @@ const RecipeForm: React.FC<RecipeFormProps> = ({
         </div>
       )}
 
-      <button type='submit' className='btn accent-btn btn-full-width'>
-        {editingItemName ? 'Update Recipe' : 'Add Recipe'}
-      </button>
-      {editingItemName && (
-        <button
-          type='button'
-          onClick={handleResetForm}
-          className='btn secondary-btn btn-full-width'
-          style={{ marginTop: '8px' }}
-        >
-          Cancel Edit
-        </button>
+      {acquisitionType === 'quest_rewards' && ( // ✅ New Quest Rewards section
+        <div className='acquisition-fields'>
+          <h3>Quest Reward Details</h3>
+          <div className='form-group'>
+            <label htmlFor='questName'>Quest Name:</label>
+            <input
+              type='text'
+              id='questName'
+              value={questName}
+              onChange={(e) => setQuestName(e.target.value)}
+              required
+            />
+          </div>
+          <div className='form-group'>
+            <label htmlFor='questFloor'>Quest Floor:</label>
+            <input
+              type='number'
+              id='questFloor'
+              value={questFloor}
+              onChange={(e) =>
+                setQuestFloor(
+                  e.target.value === '' ? '' : Number(e.target.value),
+                )
+              }
+              min='1'
+            />
+          </div>
+        </div>
       )}
+
+      <div className='form-actions'>
+        <button type='submit' className='btn accent-btn'>
+          {editingItemName ? 'Update Recipe' : 'Add Recipe'}
+        </button>
+        {editingItemName && (
+          <button
+            type='button'
+            onClick={handleResetForm}
+            className='btn secondary-btn'
+          >
+            Cancel Edit
+          </button>
+        )}
+      </div>
     </form>
   );
 };

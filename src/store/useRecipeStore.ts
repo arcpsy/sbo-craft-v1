@@ -1,15 +1,12 @@
 // src/store/useRecipeStore.ts
 import { create } from 'zustand';
-// ✅ ADD createJSONStorage here
 import { devtools, persist, createJSONStorage } from 'zustand/middleware';
-import type { Recipe } from '../types';
+import type { Recipe } from '../types'; // This import makes the store aware of the updated Recipe type structure
 
 // Define the state shape for our recipe store
 interface RecipeState {
   recipes: Recipe[];
   selectedRecipeIds: Set<string>;
-
-  // Actions
   addRecipe: (recipe: Recipe) => void;
   updateRecipe: (itemName: string, updatedRecipe: Recipe) => void;
   deleteRecipe: (itemName: string) => void;
@@ -17,13 +14,14 @@ interface RecipeState {
   toggleRecipeSelection: (itemName: string) => void;
   clearRecipeSelection: () => void;
   deleteSelectedRecipes: () => void;
+  selectAllRecipes: () => void;
 }
 
 // Create the Zustand store
 export const useRecipeStore = create<RecipeState>()(
   devtools(
     persist(
-      (set, _get) => ({
+      (set, get) => ({
         // Initial state
         recipes: [],
         selectedRecipeIds: new Set<string>(),
@@ -31,12 +29,9 @@ export const useRecipeStore = create<RecipeState>()(
         // Actions
         addRecipe: (recipe) =>
           set((state) => {
-            if (state.recipes.some((r) => r.itemName === recipe.itemName)) {
-              console.warn(
-                `Recipe with name "${recipe.itemName}" already exists. Update instead.`,
-              );
-              return state;
-            }
+            // Uniqueness check for itemName is handled in RecipeForm.tsx
+            // If you wanted a store-level uniqueness check, it would go here,
+            // but for immediate user feedback, form-level is better.
             return { recipes: [...state.recipes, recipe] };
           }),
 
@@ -86,10 +81,30 @@ export const useRecipeStore = create<RecipeState>()(
             ),
             selectedRecipeIds: new Set<string>(),
           })),
+
+        selectAllRecipes: () =>
+          set((state) => ({
+            selectedRecipeIds: new Set(
+              state.recipes.map((recipe) => recipe.itemName),
+            ),
+          })),
       }),
       {
         name: 'crafting-tree-recipes-storage',
-        storage: createJSONStorage(() => localStorage), // ✅ Fixed!
+        storage: createJSONStorage(() => localStorage, {
+          replacer: (_key, value) => {
+            if (value instanceof Set) {
+              return Array.from(value);
+            }
+            return value;
+          },
+          reviver: (key, value) => {
+            if (key === 'selectedRecipeIds' && Array.isArray(value)) {
+              return new Set(value);
+            }
+            return value;
+          },
+        }),
       },
     ),
     {

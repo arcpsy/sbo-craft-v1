@@ -1,43 +1,69 @@
 // src/types.ts
 
+// Define fixed types for ItemType for strictness
+export type ItemType =
+  | 'Items'
+  | 'One Handed'
+  | 'Two Handed'
+  | 'Rapier'
+  | 'Dagger'
+  | 'Lower Headwear'
+  | 'Upper Headwear'
+  | 'Armor'
+  | 'Shields'
+  | 'Overlay';
+
+// Ingredient for blacksmithing
 export interface Ingredient {
   name: string;
   quantity: number;
 }
 
-export interface MobDropSource {
-  mobName: string;
-  floor: number;
-}
-
-// Define specific acquisition types
+// Discriminant union for different acquisition types
 export type AcquisitionType =
   | 'blacksmithing'
   | 'mob_drop'
   | 'merchant'
-  | 'mining';
+  | 'mining'
+  | 'quest_rewards'; // ✅ Added new acquisition type
 
-export interface BlacksmithingAcquisition {
+// Base Acquisition interface (used for the discriminant property)
+interface BaseAcquisition {
+  type: AcquisitionType;
+}
+
+export interface BlacksmithingAcquisition extends BaseAcquisition {
   type: 'blacksmithing';
   ingredients: Ingredient[];
   smithingSkillRequired?: number; // Optional
 }
 
-export interface MobDropAcquisition {
+export interface MobDropAcquisition extends BaseAcquisition {
   type: 'mob_drop';
-  sources: MobDropSource[];
-  dropType?: 'Material' | 'Equipment' | 'Key Item'; // Optional, refine as needed
+  sources: {
+    mobName: string;
+    mobType: 'Boss' | 'Miniboss' | 'Minion'; // ✅ Added mobType with fixed categories
+    floor: number;
+  }[];
+  // dropType removed based on discussion
 }
 
-export interface MerchantAcquisition {
+export interface MerchantAcquisition extends BaseAcquisition {
   type: 'merchant';
-  itemWorth?: number; // Optional, e.g., in-game currency
-  merchantLocation?: string; // Optional
+  itemWorth?: number; // Cost in "Col"
+  merchantFloor?: number; // ✅ Added merchantFloor, will be "F" + number in display
 }
 
-export interface MiningAcquisition {
+export interface MiningAcquisition extends BaseAcquisition {
   type: 'mining';
-  mineableFloor?: number; // Optional, e.g., floor where it can be mined
+  mineableFloor?: number; // Will be "F" + number in display
+}
+
+// ✅ New interface for Quest Reward Acquisition
+export interface QuestRewardAcquisition extends BaseAcquisition {
+  type: 'quest_rewards';
+  questName: string; // Unique quest name
+  questFloor?: number; // Optional, will be "F" + number in display
 }
 
 // Union type for all possible acquisition methods
@@ -45,29 +71,12 @@ export type Acquisition =
   | BlacksmithingAcquisition
   | MobDropAcquisition
   | MerchantAcquisition
-  | MiningAcquisition;
+  | MiningAcquisition
+  | QuestRewardAcquisition; // ✅ Included new acquisition type
 
 // Main Recipe interface
 export interface Recipe {
   itemName: string;
-  itemType: string; // e.g., "Weapon", "Material", "Ore", "Food"
+  itemType: ItemType; // Using the ItemType union
   acquisition: Acquisition;
-  // Add any other top-level recipe properties here
-}
-
-// Interface for a node in the crafting tree visualization
-export interface CraftingTreeNode {
-  itemName: string;
-  itemType: string;
-  quantityRequired: number; // Quantity needed by its parent to craft the parent item
-  totalQuantity: number; // Total quantity needed for the root item of the tree
-  acquisition: Acquisition;
-  children: CraftingTreeNode[]; // Ingredients that make up this item
-  // Properties for D3.js visualization layout
-  x?: number;
-  y?: number;
-  width?: number;
-  height?: number;
-  childrenVisible: boolean; // For expand/collapse functionality
-  parentId?: string | null; // For drawing links between parent and child nodes
 }
