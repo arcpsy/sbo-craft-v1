@@ -1,0 +1,104 @@
+/* src/components/CraftingTreeViewer.css */
+
+.crafting-tree-viewer-container {
+  background-color: var(--color-background-card);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+}
+
+.crafting-tree-display {
+  margin-top: var(--spacing-lg);
+  border: 1px solid var(--color-border-dark);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-background-nested);
+}
+
+.tree-root,
+.tree-root ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.tree-root ul {
+  border-left: 1px solid var(--color-divider);
+  padding-left: var(--spacing-md);
+  margin-left: var(--spacing-sm);
+}
+
+.tree-root li {
+  padding: var(--spacing-xxs) 0;
+}
+
+.crafted-item {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+}
+
+.raw-material {
+  color: var(--color-secondary);
+}
+
+.node-type-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-left: var(--spacing-xs);
+}
+
+.cycle-detected-label {
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  font-weight: var(--font-weight-bold);
+  margin-left: var(--spacing-xs);
+}
+
+.total-raw-materials-display {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  border: 1px dashed var(--color-primary);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-background-nested);
+}
+
+.node-header {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  font-size: 0.9em;
+  cursor: pointer;
+  margin-right: var(--spacing-xs);
+  color: var(--color-text-muted);
+  transition: color var(--transition-speed) var(--transition-ease);
+}
+
+.toggle-button:hover {
+  color: var(--color-primary);
+}
+
+.cycle-warning {
+  background-color: rgba(255, 51, 51, 0.1);
+  border: 1px solid var(--color-error);
+  color: var(--color-error);
+  padding: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+}
+
+.cycle-warning ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+
+.cycle-warning li {
+  font-family: monospace;
+  background-color: rgba(255, 51, 51, 0.2);
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-xs);
+}

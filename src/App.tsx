@@ -1,12 +1,12 @@
-// src/App.tsx
-import React, { useRef } from 'react'; // Removed useState
+import React, { useRef } from 'react';
 import './App.css';
-import RecipeForm from './components/RecipeForm';
-import RecipeList from './components/RecipeList';
-import CraftingTreeViewer from './components/CraftingTreeViewer';
+import RecipeForm from './components/RecipeForm/RecipeForm';
+import RecipeList from './components/RecipeList/RecipeList';
+import CraftingTreeViewer from './components/CraftingTreeViewer/CraftingTreeViewer';
 import { useRecipeStore } from './store/useRecipeStore';
-import type { AcquisitionType } from './types'; // 'type' for union type
-import { ItemType } from './types'; // Regular import for enum
+import type { AcquisitionType } from './types';
+import { ItemType } from './types';
+import { Toaster, toast } from 'react-hot-toast';
 
 function App() {
   const { recipes, setRecipes } = useRecipeStore();
@@ -24,10 +24,12 @@ function App() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      alert('Recipes exported successfully!');
+      toast.success('Recipes exported successfully!');
     } catch (error) {
       console.error('Failed to export recipes:', error);
-      alert('Failed to export recipes. Please check the console for details.');
+      toast.error(
+        'Failed to export recipes. Please check the console for details.',
+      );
     }
   };
 
@@ -52,7 +54,6 @@ function App() {
           throw new Error('Imported file is not a valid JSON array.');
         }
 
-        // Define valid AcquisitionType values as a runtime array for validation
         const validAcquisitionTypes: AcquisitionType[] = [
           'blacksmithing',
           'mob-drop',
@@ -62,16 +63,13 @@ function App() {
         ];
 
         const isValidData = importedData.every((item: any) => {
-          // Basic checks for essential properties
           const hasBaseProps =
             item.itemName && item.itemType && item.acquisition;
 
-          // Check if item.itemType is one of the valid ItemType enum values
           const hasValidItemType = Object.values(ItemType).includes(
             item.itemType,
           );
 
-          // Check if item.acquisition.type is one of the valid AcquisitionType string literals
           const hasValidAcquisitionType = validAcquisitionTypes.includes(
             item.acquisition.type,
           );
@@ -86,20 +84,20 @@ function App() {
         }
 
         setRecipes(importedData);
-        alert(`Successfully imported ${importedData.length} recipes!`);
+        toast.success(`Successfully imported ${importedData.length} recipes!`);
       } catch (error: any) {
         console.error('Failed to import recipes:', error);
-        alert(
+        toast.error(
           `Failed to import recipes: ${error.message}. Please check the console.`,
         );
       } finally {
-        event.target.value = ''; // Reset the file input
+        event.target.value = '';
       }
     };
 
     reader.onerror = () => {
       console.error('FileReader error:', reader.error);
-      alert('Error reading file. Please try again.');
+      toast.error('Error reading file. Please try again.');
     };
 
     reader.readAsText(file);
@@ -107,27 +105,34 @@ function App() {
 
   return (
     <div className='App'>
-      <h1>Crafting Tree Manager</h1>
-
-      <div className='data-management-buttons'>
-        <button onClick={handleExport} className='export-btn'>
-          Export Recipes
-        </button>
-        <button onClick={handleImportClick} className='import-btn'>
-          Import Recipes
-        </button>
-        <input
-          type='file'
-          ref={fileInputRef}
-          onChange={handleImport}
-          style={{ display: 'none' }}
-          accept='.json'
-        />
+      <Toaster position='top-center' reverseOrder={false} />
+      <div className='header-row'>
+        <h1>SBO Crafting Tree</h1>
+        <div className='data-management-buttons'>
+          <button onClick={handleExport} className='export-btn'>
+            Export Recipes
+          </button>
+          <button onClick={handleImportClick} className='import-btn'>
+            Import Recipes
+          </button>
+          <input
+            type='file'
+            ref={fileInputRef}
+            onChange={handleImport}
+            style={{ display: 'none' }}
+            accept='.json'
+          />
+        </div>
       </div>
 
-      <RecipeForm />
-      <RecipeList />
-      <CraftingTreeViewer />
+      <div className='form-list-row'>
+        <RecipeForm />
+        <RecipeList />
+      </div>
+
+      <div className='viewer-row'>
+        <CraftingTreeViewer />
+      </div>
     </div>
   );
 }

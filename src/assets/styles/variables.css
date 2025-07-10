@@ -1,0 +1,68 @@
+/* src/styles/variables.css */
+
+:root {
+  /* --- Colors: Modern & Professional Dark Theme --- */
+  --color-primary: #00aaff;
+  --color-primary-dark: #0088cc;
+  --color-primary-light: #66ccff;
+  --color-secondary: #ffaa00;
+  --color-tertiary: #a5d6a7;
+
+  /* Core Dark Palette */
+  --color-background-app: #121212;
+  --color-background-card: #1e1e1e;
+  --color-background-nested: #2a2a2a;
+  --color-background-input: #121212;
+  --color-background-hover: #333333;
+
+  /* Text Colors */
+  --color-text-light: #e0e0e0;
+  --color-text-muted: #b0b0b0;
+  --color-text-dark: #1a1a1a;
+
+  /* Borders & Dividers */
+  --color-border: #3a3a3a;
+  --color-border-dark: #2f2f2f;
+  --color-divider: #4a4a4a;
+
+  /* Status Colors */
+  --color-error: #ff3333;
+  --color-warning: #ffaa00;
+  --color-info: #00aaff;
+  --color-success: #00cc66;
+
+  /* Spacing System (4px grid) */
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+
+  /* Font Sizes */
+  --font-size-sm: 0.875rem; /* 14px */
+  --font-size-base: 1rem; /* 16px */
+  --font-size-md: 1.125rem; /* 18px */
+  --font-size-lg: 1.25rem; /* 20px */
+  --font-size-xl: 1.5rem; /* 24px */
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Border Radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+
+  /* Shadows */
+  --box-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --box-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --box-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+
+  /* Transitions */
+  --transition-speed: 0.2s;
+  --transition-ease: ease-in-out;
+}

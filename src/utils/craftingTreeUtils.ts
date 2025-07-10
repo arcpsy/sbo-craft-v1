@@ -1,6 +1,11 @@
 // src/utils/craftingTreeUtils.ts
 
-import type { Recipe, Ingredient, BlacksmithingAcquisition } from '../types';
+import {
+  // @ts-ignore
+  type Ingredient,
+  type Recipe,
+  type BlacksmithingAcquisition,
+} from '../types';
 
 /**
  * Interface representing a node in the crafting dependency tree.

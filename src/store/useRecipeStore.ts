@@ -22,7 +22,7 @@ interface RecipeState {
 export const useRecipeStore = create<RecipeState>()(
   devtools(
     persist(
-      (set, get) => ({
+      (set, _get) => ({
         // Initial state
         recipes: [],
         selectedRecipeIds: new Set<string>(),

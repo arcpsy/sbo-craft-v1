@@ -1,13 +1,15 @@
 // src/components/CraftingTreeViewer.tsx
 import React, { useState, useEffect } from 'react';
-import { useRecipeStore } from '../store/useRecipeStore';
+import './CraftingTreeViewer.css';
+import { useRecipeStore } from '../../store/useRecipeStore';
 import {
   buildCraftingTree,
   calculateTotalRawMaterials,
   type TreeNode,
+  // @ts-ignore
   type BuildTreeResult,
-} from '../utils/craftingTreeUtils'; // ✅ Import BuildTreeResult
-import type { Recipe, BlacksmithingAcquisition } from '../types';
+} from '../../utils/craftingTreeUtils'; // ✅ Import BuildTreeResult
+import type { Recipe, BlacksmithingAcquisition } from '../../types';
 
 import './CraftingTreeViewer.css';
 

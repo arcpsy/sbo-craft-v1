@@ -1,255 +1,3 @@
-/* src/App.css */
-
-/* Basic Resets & Global Styles */
-body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  padding: 20px;
-  background-color: #f4f7f6; /* Light background for the whole page */
-  color: #333;
-  line-height: 1.6;
-}
-
-#root {
-  display: flex;
-  justify-content: center;
-}
-
-.App {
-  max-width: 900px;
-  width: 100%;
-  padding: 20px;
-  background-color: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-h1,
-h2,
-h3,
-h4 {
-  color: #2c3e50;
-  margin-top: 0;
-  margin-bottom: 15px;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: #007bff;
-}
-
-/* Card Styling (re-usable for forms, lists, viewers) */
-.card {
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 25px; /* Spacing between cards */
-}
-
-/* Form Group Styles (common for labels and inputs) */
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-  color: #555;
-}
-
-.form-group input[type='text'],
-.form-group input[type='number'],
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-sizing: border-box; /* Include padding in width calculation */
-  font-size: 1em;
-  color: #333;
-}
-
-.form-group input[type='checkbox'] {
-  margin-right: 8px;
-}
-
-.form-group input[type='text']:focus,
-.form-group input[type='number']:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-}
-
-/* Buttons */
-button {
-  background-color: #007bff;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 1em;
-  transition: background-color 0.2s ease;
-  margin-right: 10px; /* Spacing between buttons */
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-button:disabled {
-  background-color: #cccccc;
-  cursor: not-allowed;
-}
-
-/* Specific Styles for RecipeList */
-.recipe-list {
-  list-style-type: none;
-  padding: 0;
-  margin-top: 20px;
-}
-
-.recipe-item {
-  display: flex;
-  align-items: flex-start;
-  background-color: #fefefe;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 10px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.recipe-checkbox-container {
-  margin-right: 15px;
-  margin-top: 5px; /* Align checkbox with text */
-}
-
-.recipe-details {
-  flex-grow: 1;
-}
-
-.recipe-details h3 {
-  margin-top: 0;
-  margin-bottom: 8px;
-  color: #007bff;
-}
-
-.recipe-details p {
-  margin-bottom: 5px;
-  font-size: 0.95em;
-}
-
-.ingredients-list {
-  margin-top: 10px;
-  border-top: 1px dashed #eee;
-  padding-top: 10px;
-}
-
-.ingredients-list h4 {
-  margin-top: 0;
-  margin-bottom: 5px;
-  color: #666;
-  font-size: 0.9em;
-}
-
-.ingredients-list ul {
-  list-style-type: disc;
-  padding-left: 20px;
-}
-
-.ingredients-list li {
-  font-size: 0.9em;
-  margin-bottom: 3px;
-}
-
-.recipe-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-left: 20px;
-}
-
-.recipe-actions button {
-  width: 80px; /* Fixed width for consistency */
-  margin-right: 0;
-}
-
-.delete-selected-btn {
-  background-color: #dc3545; /* Red color for delete */
-}
-
-.delete-selected-btn:hover {
-  background-color: #c82333;
-}
-
-.select-all-container {
-  margin-bottom: 15px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-/* Search Bar Styles (added now) */
-.search-bar {
-  margin-bottom: 20px;
-}
-
-.search-bar input[type='text'] {
-  width: 100%;
-  padding: 10px 15px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  font-size: 1em;
-  box-sizing: border-box; /* Ensures padding doesn't add to width */
-}
-
-.search-bar input[type='text']::placeholder {
-  color: #aaa;
-}
-
-.filters-container {
-  display: flex; /* Use flexbox to align search and filter side-by-side */
-  gap: 15px; /* Space between filter elements */
-  margin-bottom: 20px;
-  flex-wrap: wrap; /* Allow filters to wrap on smaller screens */
-}
-
-.filters-container .search-bar {
-  flex-grow: 1; /* Allow search bar to take available space */
-  margin-bottom: 0; /* Remove margin as gap handles spacing */
-}
-
-.filters-container .filter-dropdown {
-  min-width: 180px; /* Give dropdown a reasonable minimum width */
-}
-
-.filters-container select {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  box-sizing: border-box;
-  font-size: 1em;
-  color: #333;
-  background-color: white; /* Ensure background is white */
-  -webkit-appearance: none; /* Remove default dropdown arrow on WebKit browsers */
-  -moz-appearance: none; /* Remove default dropdown arrow on Firefox */
-  appearance: none; /* Remove default dropdown arrow */
-  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292%22%20height%3D%22292%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2C197.382L150.311%2C60.692c-5.858-5.857-15.356-5.857-21.213%2C0L5%2C197.382c-5.858%2C5.858-5.858%2C15.355%2C0%2C21.213c5.858%2C5.858%2C15.355%2C5.858%2C21.213%2C0L139.7%2C102.106c5.857-5.857%2C15.355-5.857%2C21.213%2C0L266%2C218.595c5.858%2C5.858%2C15.355%2C5.858%2C21.213%2C0C292.858%2C212.737%2C292.858%2C203.24%2C287%2C197.382z%22%2F%3E%3C%2Fsvg%3E'); /* Custom arrow for dropdown */
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 12px;
-  padding-right: 30px; /* Space for the custom arrow */
-}
-
-/* For accessibility, hide the label visually but keep it for screen readers */
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -261,136 +9,153 @@ button:disabled {
   border: 0;
 }
 
-/* --- */
-/* RecipeForm Specific Styles */
-.recipe-form-container {
-  /* Inherits .card styles, but can add specific spacing */
-  margin-top: 20px;
-  padding: 30px; /* More padding for the form */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }
 
-.recipe-form-container h2 {
-  text-align: center;
-  color: #007bff;
-  margin-bottom: 30px;
+/* src/App.css */
+
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: var(--spacing-lg);
+  background-color: var(--color-background-app);
+  color: var(--color-text-light);
+  line-height: 1.6;
+  background-image: radial-gradient(var(--color-border) 1px, transparent 0);
+  background-size: 40px 40px;
 }
 
-.form-section {
-  margin-bottom: 25px; /* Spacing between form logical sections */
-  padding: 15px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-}
-
-.form-section h3 {
-  color: #4a698a;
-  margin-top: 0;
-  margin-bottom: 15px;
-  border-bottom: 1px dashed #cfd8dc;
-  padding-bottom: 10px;
-}
-
-/* Individual ingredient/mob source item styling */
-.ingredient-item,
-.mob-source-item {
+#root {
   display: flex;
-  align-items: center;
-  gap: 10px; /* Space between input/select and button */
-  margin-bottom: 10px;
-  background-color: #eef3f6;
-  padding: 8px 10px;
-  border-radius: 5px;
+  justify-content: center;
 }
 
-.ingredient-item input,
-.mob-source-item input,
-.mob-source-item select {
-  flex-grow: 1; /* Allow inputs to take available space */
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #b0c4de;
+.App {
+  max-width: 1200px;
+  width: 100%;
+  padding: var(--spacing-xl);
+  background-color: transparent;
+  border-radius: var(--border-radius-lg);
+  box-shadow: none;
 }
 
-/* Specific Button Styles */
-.add-btn {
-  background-color: #28a745; /* Green for add */
-  margin-top: 10px;
+h1,
+h2,
+h3,
+h4 {
+  color: var(--color-text-light);
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  font-weight: var(--font-weight-bold);
 }
 
-.add-btn:hover {
-  background-color: #218838;
+h1 {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  font-size: var(--font-size-xl);
 }
 
-.remove-btn {
-  background-color: #dc3545; /* Red for remove */
-  padding: 8px 12px; /* Slightly smaller padding for ingredient/mob buttons */
-  font-size: 0.9em;
+.card {
+  background-color: var(--color-background-card);
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--box-shadow-md);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid var(--color-border);
 }
 
-.remove-btn:hover {
-  background-color: #c82333;
+.form-group {
+  margin-bottom: var(--spacing-md);
 }
 
-.submit-btn {
-  background-color: #007bff;
-  margin-top: 20px;
-  padding: 12px 20px; /* Larger for primary actions */
-  font-size: 1.1em;
+.form-group label {
+  display: block;
+  margin-bottom: var(--spacing-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
 }
 
-.submit-btn:hover {
-  background-color: #0056b3;
+.form-group input[type='text'],
+.form-group input[type='number'],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  box-sizing: border-box;
+  font-size: var(--font-size-base);
+  color: var(--color-text-light);
+  background-color: var(--color-background-input);
+  transition: border-color var(--transition-speed) var(--transition-ease);
 }
 
-.cancel-btn {
-  background-color: #6c757d; /* Grey for cancel */
+.form-group input[type='text']:focus,
+.form-group input[type='number']:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
 }
 
-.cancel-btn:hover {
-  background-color: #5a6268;
+button {
+  background-color: var(--color-primary);
+  color: var(--color-text-dark);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  transition: background-color var(--transition-speed) var(--transition-ease);
 }
 
-/* Error message styling */
-.error-message {
-  color: #dc3545; /* Red for errors */
-  font-size: 0.85em;
-  margin-top: 5px;
-  margin-bottom: 10px;
+button:hover {
+  background-color: var(--color-primary-dark);
 }
 
-/* --- */
+button:disabled {
+  background-color: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
 
-/* Data Management Buttons Section */
 .data-management-buttons {
   text-align: center;
-  margin-bottom: 25px;
-  padding: 15px;
-  background-color: #e9f7ef; /* Light green background */
-  border: 1px solid #d4edda;
-  border-radius: 8px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: var(--spacing-lg);
 }
 
-.data-management-buttons button {
-  /* Inherits general button styles, but can override if needed */
-  margin: 0 10px; /* Space between buttons if multiple */
-  padding: 10px 20px;
-  font-size: 1em;
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
 }
 
-.export-btn {
-  background-color: #28a745; /* Green for export */
+.header-row h1 {
+  margin-bottom: 0;
 }
 
-.export-btn:hover {
-  background-color: #218838;
+.data-management-buttons {
+  display: flex;
+  gap: var(--spacing-md);
 }
 
-.import-btn {
-  background-color: #007bff; /* Blue for import (or choose another color) */
+.form-list-row {
+  display: flex;
+  flex-direction: row;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
 }
 
-.import-btn:hover {
-  background-color: #0056b3;
+.viewer-row {
+  /* Add any specific styles for the viewer row if needed */
 }

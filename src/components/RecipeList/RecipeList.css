@@ -1,0 +1,274 @@
+/* src/components/RecipeList.css */
+
+.recipe-list-container {
+  background-color: var(--color-background-card);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ensure it takes full height in flex container */
+}
+
+.recipe-list {
+  list-style-type: none;
+  padding: 0;
+  margin-top: var(--spacing-lg);
+  overflow-y: auto; /* Make the list scrollable */
+  flex-grow: 1; /* Allow list to take available space */
+  padding-right: var(--spacing-sm); /* Space for scrollbar */
+}
+
+/* Custom Scrollbar Styles */
+.recipe-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.recipe-list::-webkit-scrollbar-track {
+  background: var(--color-background-nested);
+  border-radius: 10px;
+}
+
+.recipe-list::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 10px;
+}
+
+.recipe-list::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-dark);
+}
+
+.recipe-item {
+  background-color: var(--color-background-nested);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--border-radius-md);
+  margin-bottom: var(--spacing-md);
+  transition: background-color var(--transition-speed) var(--transition-ease);
+  overflow: hidden; /* Hide overflowing content when collapsed */
+}
+
+.recipe-item:hover {
+  background-color: var(--color-background-hover);
+}
+
+.recipe-header {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-md);
+  cursor: pointer;
+  user-select: none; /* Prevent text selection on click */
+}
+
+.recipe-checkbox-container {
+  margin-right: var(--spacing-md);
+}
+
+.recipe-title {
+  margin: 0;
+  flex-grow: 1;
+  color: var(--color-primary-light);
+}
+
+.toggle-details-btn {
+  background: none;
+  border: none;
+  font-size: var(--font-size-lg);
+  cursor: pointer;
+  color: var(--color-text-muted);
+  transition: transform var(--transition-speed) var(--transition-ease);
+  padding: 0 var(--spacing-xs);
+}
+
+.recipe-item.expanded .toggle-details-btn {
+  transform: rotate(90deg); /* Rotate icon when expanded */
+}
+
+.recipe-details-expanded {
+  padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+  border-top: 1px solid var(--color-divider);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.recipe-details-expanded p {
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.recipe-details-expanded p strong {
+  color: var(--color-text-light);
+}
+
+.ingredients-list {
+  margin-top: var(--spacing-sm);
+  border-top: 1px dashed var(--color-divider);
+  padding-top: var(--spacing-sm);
+}
+
+.ingredients-list h4 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-primary-light);
+}
+
+.ingredients-list ul {
+  list-style-type: disc;
+  padding-left: var(--spacing-lg);
+  margin-top: var(--spacing-xs);
+}
+
+.ingredients-list li {
+  margin-bottom: var(--spacing-xxs);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.recipe-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  justify-content: flex-end; /* Align buttons to the right */
+}
+
+.recipe-actions button {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.delete-selected-btn {
+  background-color: var(--color-error);
+}
+
+.filters-container {
+  display: flex;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.search-input-wrapper {
+  position: relative;
+  flex-grow: 1;
+}
+
+.search-input-wrapper input[type='text'],
+.filter-dropdown select {
+  width: 100%;
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  box-sizing: border-box;
+  font-size: var(--font-size-base);
+  color: var(--color-text-light);
+  background-color: var(--color-background-input);
+  transition: border-color var(--transition-speed) var(--transition-ease);
+}
+
+.search-input-wrapper input[type='text']:focus,
+.filter-dropdown select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(0, 170, 255, 0.3);
+}
+
+.search-input-wrapper input[type='text'] {
+  padding-left: var(--spacing-lg); /* Space for icon */
+  padding-right: var(--spacing-lg); /* Space for clear button */
+}
+
+.search-icon {
+  position: absolute;
+  left: var(--spacing-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: var(--spacing-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  padding: 0;
+}
+
+.clear-search-btn:hover {
+  color: var(--color-text-light);
+}
+
+.filter-dropdown {
+  position: relative;
+  min-width: 200px;
+}
+
+.filter-dropdown select {
+  padding-left: var(--spacing-lg); /* Space for icon */
+}
+
+.filter-icon {
+  position: absolute;
+  left: var(--spacing-sm);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none; /* Allow clicks to pass through to select */
+}
+
+/* Toast notification button styling */
+.toast-confirm-btn {
+  background-color: var(--color-primary);
+  color: var(--color-text-dark);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-md);
+  margin-left: var(--spacing-sm);
+}
+
+.toast-confirm-btn:hover {
+  background-color: var(--color-primary-dark);
+}
+
+.toast-cancel-btn {
+  background-color: var(--color-background-nested);
+  color: var(--color-text-light);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  margin-left: var(--spacing-sm);
+}
+
+.toast-cancel-btn:hover {
+  background-color: var(--color-background-hover);
+}
+
+.select-all-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background-color: var(--color-background-nested);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--color-border-dark);
+}
+
+.select-all-container label {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-light);
+}
+
+.select-all-container input[type='checkbox'] {
+  margin-right: var(--spacing-xs);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

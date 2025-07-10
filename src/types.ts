@@ -17,7 +17,7 @@ export const ItemType = {
 
 // Now, derive the ItemType TYPE from the ItemType CONST OBJECT
 // This creates a union type of all its string values for strict type checking
-export type ItemType = (typeof ItemType)[keyof typeof ItemType];
+export type ItemTypeType = (typeof ItemType)[keyof typeof ItemType];
 
 // Ingredient for blacksmithing
 export interface Ingredient {
@@ -82,6 +82,6 @@ export type Acquisition =
 // Main Recipe interface
 export interface Recipe {
   itemName: string;
-  itemType: ItemType; // Using the ItemType derived type
+  itemType: ItemTypeType; // Using the ItemType derived type
   acquisition: Acquisition;
 }

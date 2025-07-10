@@ -1,0 +1,217 @@
+/* src/components/RecipeForm.css */
+
+.recipe-form-container {
+  padding: var(--spacing-lg);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+/* General input styling for consistency */
+.recipe-form-container input[type='text'],
+.recipe-form-container input[type='number'],
+.recipe-form-container select,
+.recipe-form-container textarea {
+  padding: var(--spacing-sm);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-background-input);
+  color: var(--color-text-light);
+  font-size: var(--font-size-base);
+  box-sizing: border-box; /* Ensure padding doesn't increase width */
+  transition:
+    border-color var(--transition-speed) var(--transition-ease),
+    box-shadow var(--transition-speed) var(--transition-ease);
+}
+
+.recipe-form-container input[type='text']:focus,
+.recipe-form-container input[type='number']:focus,
+.recipe-form-container select:focus,
+.recipe-form-container textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(0, 170, 255, 0.3); /* Subtle glow */
+}
+
+/* Error message styling */
+.error-message {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xxs);
+  display: block; /* Ensures it takes its own line */
+  font-weight: var(--font-weight-medium);
+}
+
+/* Tabs styling */
+.tabs {
+  display: flex;
+  flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
+  gap: var(--spacing-xs); /* Smaller gap between tabs */
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: var(--spacing-xxs); /* Space for the active indicator */
+}
+
+.tabs button {
+  background-color: var(
+    --color-background-nested
+  ); /* Subtle background for tabs */
+  border: 1px solid transparent; /* Consistent border */
+  border-bottom: none; /* Remove bottom border for active indicator */
+  padding: var(--spacing-sm) var(--spacing-md);
+  cursor: pointer;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+  position: relative;
+  transition: all var(--transition-speed) var(--transition-ease);
+  border-top-left-radius: var(--border-radius-md);
+  border-top-right-radius: var(--border-radius-md);
+}
+
+.tabs button:hover:not(.active) {
+  color: var(--color-text-light);
+  background-color: var(--color-background-hover);
+}
+
+.tabs button.active {
+  color: var(--color-primary);
+  background-color: var(
+    --color-background-card
+  ); /* Match modal content background */
+  border-color: var(--color-border);
+  border-bottom-color: transparent; /* Hide border for active tab */
+  font-weight: var(--font-weight-medium);
+}
+
+.tabs button.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; /* Position just below the tab */
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: var(--color-primary);
+  border-bottom-left-radius: var(--border-radius-sm);
+  border-bottom-right-radius: var(--border-radius-sm);
+}
+
+.tab-content {
+  padding: var(--spacing-lg) 0;
+}
+
+.form-section {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Dynamic list items (ingredients, mob sources) */
+.ingredient-item,
+.mob-source-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background-color: var(--color-background-nested);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--border-radius-md);
+}
+
+.ingredient-item input[type='text'],
+.mob-source-item input[type='text'],
+.mob-source-item input[type='number'],
+.mob-source-item select {
+  flex-grow: 1; /* Allow inputs to take available space */
+  margin: 0; /* Reset margin from general form-group */
+}
+
+.ingredient-item input[name='quantity'] {
+  flex-grow: 0; /* Don't let quantity input grow */
+  width: 80px; /* Fixed width for quantity */
+  text-align: center;
+}
+
+/* Remove button styling within dynamic lists */
+.ingredient-item button,
+.mob-source-item button {
+  background-color: var(--color-error);
+  color: var(--color-text-light); /* Changed to light for better contrast */
+  padding: var(--spacing-xxs) var(--spacing-xs); /* Smaller padding */
+  font-size: var(--font-size-sm);
+  border-radius: var(--border-radius-sm);
+  flex-shrink: 0; /* Prevent button from shrinking */
+}
+
+.ingredient-item button:hover,
+.mob-source-item button:hover {
+  background-color: #cc2222; /* Darker red on hover */
+}
+
+/* Add button styling for dynamic lists */
+.acquisition-fields > button {
+  background-color: var(
+    --color-tertiary
+  ); /* Use a different color for add buttons */
+  color: var(--color-text-dark);
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+}
+
+.acquisition-fields > button:hover {
+  background-color: #8bc34a; /* Darker green on hover */
+}
+
+/* Submit button styling */
+.submit-btn {
+  width: auto;
+  padding: var(--spacing-md) var(--spacing-lg); /* Larger padding */
+  font-size: var(--font-size-md);
+  margin-top: var(--spacing-lg);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Headings within acquisition fields */
+.acquisition-fields h3,
+.acquisition-fields h4 {
+  margin-top: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  color: var(--color-primary-light); /* Highlight these headings */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.form-actions .submit-btn {
+  width: auto;
+  flex-grow: 1;
+}
+
+.cancel-btn {
+  background-color: var(--color-background-nested);
+  color: var(--color-text-light);
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-md) var(--spacing-lg); /* Match submit button padding */
+  font-size: var(--font-size-md); /* Match submit button font size */
+  margin-top: var(--spacing-lg);
+}
+
+.cancel-btn:hover {
+  background-color: var(--color-background-hover);
+}
