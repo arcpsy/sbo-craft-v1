@@ -2,24 +2,26 @@
 
 .recipe-list-container {
   background-color: var(--color-background-card);
-  border-radius: var(--border-radius-lg);
-  padding: var(--spacing-lg);
+  border-radius: var(--border-radius-md); /* Adjusted from lg */
+  padding: var(--spacing-md); /* Adjusted from lg */
   border: 1px solid var(--color-border);
   display: flex;
-  flex-direction: column;
-  height: 100%; /* Ensure it takes full height in flex container */
+  flex-direction: column; /* Make container a flex column */
+  height: 400px; /* Fixed height for the entire card */
+  /* Removed overflow-y: auto from here, as the list itself will scroll */
 }
 
+/* The actual list that will scroll */
 .recipe-list {
   list-style-type: none;
   padding: 0;
-  margin-top: var(--spacing-lg);
-  overflow-y: auto; /* Make the list scrollable */
-  flex-grow: 1; /* Allow list to take available space */
-  padding-right: var(--spacing-sm); /* Space for scrollbar */
+  margin-top: var(--spacing-md); /* Adjusted from lg */
+  flex-grow: 1; /* Allow the list to take up remaining space */
+  overflow-y: auto; /* Enable vertical scrolling for the list */
+  padding-right: var(--spacing-xs); /* Space for scrollbar */
 }
 
-/* Custom Scrollbar Styles */
+/* Custom Scrollbar Styles for RecipeList */
 .recipe-list::-webkit-scrollbar {
   width: 8px;
 }
@@ -41,8 +43,8 @@
 .recipe-item {
   background-color: var(--color-background-nested);
   border: 1px solid var(--color-border-dark);
-  border-radius: var(--border-radius-md);
-  margin-bottom: var(--spacing-md);
+  border-radius: var(--border-radius-sm); /* Adjusted from md */
+  margin-bottom: var(--spacing-sm); /* Adjusted from md */
   transition: background-color var(--transition-speed) var(--transition-ease);
   overflow: hidden; /* Hide overflowing content when collapsed */
 }
@@ -54,19 +56,20 @@
 .recipe-header {
   display: flex;
   align-items: center;
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm); /* Adjusted from md */
   cursor: pointer;
-  user-select: none; /* Prevent text selection on click */
+  user-select: none;
 }
 
 .recipe-checkbox-container {
-  margin-right: var(--spacing-md);
+  margin-right: var(--spacing-sm);
 }
 
 .recipe-title {
   margin: 0;
   flex-grow: 1;
   color: var(--color-primary-light);
+  font-size: var(--font-size-base);
 }
 
 .toggle-details-btn {
@@ -80,17 +83,17 @@
 }
 
 .recipe-item.expanded .toggle-details-btn {
-  transform: rotate(90deg); /* Rotate icon when expanded */
+  transform: rotate(90deg);
 }
 
 .recipe-details-expanded {
-  padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
+  padding: 0 var(--spacing-sm) var(--spacing-sm) var(--spacing-sm); /* Adjusted from md */
   border-top: 1px solid var(--color-divider);
   animation: fadeIn 0.3s ease-in-out;
 }
 
 .recipe-details-expanded p {
-  margin-bottom: var(--spacing-xs);
+  margin-bottom: var(--spacing-xs); /* Adjusted from xs */
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
 }
@@ -127,7 +130,7 @@
   display: flex;
   gap: var(--spacing-sm);
   margin-top: var(--spacing-md);
-  justify-content: flex-end; /* Align buttons to the right */
+  justify-content: flex-end;
 }
 
 .recipe-actions button {
@@ -153,9 +156,9 @@
 .search-input-wrapper input[type='text'],
 .filter-dropdown select {
   width: 100%;
-  padding: var(--spacing-sm);
+  padding: var(--spacing-xs);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--border-radius-sm);
   box-sizing: border-box;
   font-size: var(--font-size-base);
   color: var(--color-text-light);
@@ -171,8 +174,8 @@
 }
 
 .search-input-wrapper input[type='text'] {
-  padding-left: var(--spacing-lg); /* Space for icon */
-  padding-right: var(--spacing-lg); /* Space for clear button */
+  padding-left: var(--spacing-lg);
+  padding-right: var(--spacing-lg);
 }
 
 .search-icon {
@@ -206,7 +209,7 @@
 }
 
 .filter-dropdown select {
-  padding-left: var(--spacing-lg); /* Space for icon */
+  padding-left: var(--spacing-lg);
 }
 
 .filter-icon {
@@ -215,7 +218,7 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-text-muted);
-  pointer-events: none; /* Allow clicks to pass through to select */
+  pointer-events: none;
 }
 
 /* Toast notification button styling */
@@ -223,7 +226,7 @@
   background-color: var(--color-primary);
   color: var(--color-text-dark);
   padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--border-radius-sm);
   margin-left: var(--spacing-sm);
 }
 
@@ -236,7 +239,7 @@
   color: var(--color-text-light);
   padding: var(--spacing-xs) var(--spacing-sm);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--border-radius-sm);
   margin-left: var(--spacing-sm);
 }
 
@@ -248,10 +251,10 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
-  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-sm);
   background-color: var(--color-background-nested);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--border-radius-sm);
   border: 1px solid var(--color-border-dark);
 }
 

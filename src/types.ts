@@ -1,7 +1,17 @@
 // src/types.ts
 
-// Define ItemType as a CONST OBJECT for runtime values
-// This allows us to use Object.values() on it in components
+/**
+ * This file defines all core TypeScript interfaces and types used throughout the application.
+ * It serves as the single source of truth for data structures, ensuring type safety,
+ * consistency, and clarity across components, stores, and utility functions.
+ */
+
+/**
+ * Defines a constant object for various item types.
+ * Using `as const` ensures that the values are treated as literal types,
+ * which is crucial for deriving a strict union type (`ItemTypeType`) and for
+ * runtime usage (e.g., populating dropdowns with `Object.values(ItemType)`).
+ */
 export const ItemType = {
   Items: 'Items',
   OneHanded: 'One Handed',
@@ -13,65 +23,104 @@ export const ItemType = {
   Armor: 'Armor',
   Shields: 'Shields',
   Overlay: 'Overlay',
-} as const; // 'as const' makes it a "readonly" type, ensuring literal string values
+} as const;
 
-// Now, derive the ItemType TYPE from the ItemType CONST OBJECT
-// This creates a union type of all its string values for strict type checking
+/**
+ * Derives a union type from the `ItemType` constant object.
+ * This type (`'Items' | 'One Handed' | ...`) ensures that any variable
+ * or property typed as `ItemTypeType` can only hold one of these predefined string values,
+ * providing strong compile-time type checking for item categories.
+ */
 export type ItemTypeType = (typeof ItemType)[keyof typeof ItemType];
 
-// Ingredient for blacksmithing
+/**
+ * Represents a single ingredient required for a crafting recipe.
+ * Used specifically within blacksmithing recipes.
+ */
 export interface Ingredient {
   name: string;
   quantity: number;
 }
 
-// Discriminant union for different acquisition types
+/**
+ * A union type defining all possible acquisition methods for an item.
+ * This type is used as a "discriminant property" in the `Acquisition` union,
+ * allowing TypeScript to intelligently narrow down the specific acquisition interface.
+ */
 export type AcquisitionType =
   | 'blacksmithing'
-  | 'mob-drop' // Changed back to hyphenated for consistency with previous use
+  | 'mob-drop'
   | 'merchant'
   | 'mining'
   | 'quest-rewards';
 
-// Base Acquisition interface (used for the discriminant property)
+/**
+ * Base interface for all acquisition types.
+ * It includes the `type` property, which acts as the discriminant for the `Acquisition` union.
+ */
 interface BaseAcquisition {
   type: AcquisitionType;
 }
 
+/**
+ * Defines the structure for items acquired through blacksmithing.
+ * Extends `BaseAcquisition` and includes specific properties like `ingredients`
+ * and an optional `smithingSkillRequired`.
+ */
 export interface BlacksmithingAcquisition extends BaseAcquisition {
   type: 'blacksmithing';
   ingredients: Ingredient[];
-  smithingSkillRequired?: number; // Optional
+  smithingSkillRequired?: number; // Optional skill level required for crafting
 }
 
+/**
+ * Defines the structure for items acquired as mob drops.
+ * Includes an array of `mobSources`, each detailing the mob, its type, and floor.
+ */
 export interface MobDropAcquisition extends BaseAcquisition {
   type: 'mob-drop';
   mobSources: {
-    // Changed 'sources' to 'mobSources' for clarity
     mobName: string;
     mobType: 'Boss' | 'Miniboss' | 'Minion';
     floor: number;
   }[];
 }
 
+/**
+ * Defines the structure for items acquired from merchants.
+ * Includes optional properties for item worth in "Col" (currency) and merchant floor.
+ */
 export interface MerchantAcquisition extends BaseAcquisition {
   type: 'merchant';
-  itemWorthCol?: number; // Changed from itemWorth to itemWorthCol for clarity with currency
-  merchantFloor?: number;
+  itemWorthCol?: number; // Cost of the item in "Col"
+  merchantFloor?: number; // Floor where the merchant is located
 }
 
+/**
+ * Defines the structure for items acquired through mining.
+ * Includes an optional property for the mineable floor.
+ */
 export interface MiningAcquisition extends BaseAcquisition {
   type: 'mining';
-  mineableFloor?: number;
+  mineableFloor?: number; // Floor where the item can be mined
 }
 
+/**
+ * Defines the structure for items acquired as quest rewards.
+ * Includes the `questName` and an optional `questFloor`.
+ */
 export interface QuestRewardAcquisition extends BaseAcquisition {
   type: 'quest-rewards';
   questName: string;
-  questFloor?: number;
+  questFloor?: number; // Floor where the quest is given or completed
 }
 
-// Union type for all possible acquisition methods
+/**
+ * A union type representing all possible ways an item can be acquired.
+ * This is a "discriminant union" where the `type` property determines
+ * which specific acquisition interface (e.g., `BlacksmithingAcquisition`)
+ * is being used, allowing for type-safe access to its unique properties.
+ */
 export type Acquisition =
   | BlacksmithingAcquisition
   | MobDropAcquisition
@@ -79,9 +128,14 @@ export type Acquisition =
   | MiningAcquisition
   | QuestRewardAcquisition;
 
-// Main Recipe interface
+/**
+ * The main interface for a crafting recipe.
+ * This is the core data structure used throughout the application to represent
+ * a single recipe entry. It combines general item information with its specific
+ * acquisition details.
+ */
 export interface Recipe {
-  itemName: string;
-  itemType: ItemTypeType; // Using the ItemType derived type
-  acquisition: Acquisition;
+  itemName: string; // The name of the item being crafted or acquired
+  itemType: ItemTypeType; // The category of the item (e.g., 'Armor', 'One Handed')
+  acquisition: Acquisition; // Details on how the item is acquired, using the discriminant union
 }

@@ -1,0 +1,185 @@
+# Project Overview: SBO Crafting Tree Manager
+
+This document provides a comprehensive overview of the 'SBO Crafting Tree Manager' project, designed to help new developers quickly understand its architecture, core functionalities, and how different parts of the system interact.
+
+## 1. Purpose
+
+The primary purpose of this application is to allow users to define, manage, and visualize crafting recipes, specifically focusing on "blacksmithing" recipes to generate a crafting dependency tree. It helps users understand the raw materials required for complex crafted items and identifies any circular dependencies (crafting cycles) within their defined recipes.
+
+## 2. Core Logic & Data Flow
+
+The application operates entirely client-side, meaning there is no backend server or database. All data (crafting recipes) is stored and managed within the user's browser using `localStorage` via Zustand's persistence middleware.
+
+- **Recipe Definition:** Users input recipe details through a form, specifying item name, type, and acquisition method (blacksmithing, mob drop, merchant, mining, quest rewards). For blacksmithing recipes, ingredients are also defined.
+- **Recipe Storage:** Recipes are stored in a global Zustand store (`useRecipeStore`) and automatically persisted to `localStorage`.
+- **Crafting Tree Generation:** For blacksmithing recipes, a crafting tree can be generated. This involves:
+    - Recursively traversing the dependencies of a selected crafted item.
+    - Identifying raw materials (items not crafted via blacksmithing).
+    - Detecting and reporting any cyclic dependencies (where an item indirectly requires itself).
+- **Raw Material Calculation:** Based on the generated crafting tree, the application calculates the total quantities of all necessary raw materials.
+- **Import/Export:** Users can import and export their recipe data as JSON files, allowing for data backup and sharing.
+
+## 3. Project Structure
+
+The project follows a standard React application structure, organized by feature and type.
+
+```
+sbo-craft-v1/
+├───public/                 # Static assets
+├───src/                    # Main application source code
+│   ├───assets/             # Global styles and static assets (e.g., images)
+│   │   └───styles/
+│   ├───components/         # Reusable UI components, grouped by feature
+│   │   ├───CraftingTreeViewer/
+│   │   ├───RecipeForm/
+│   │   └───RecipeList/
+│   ├───store/              # Zustand stores for global state management
+│   ├───utils/              # Utility functions (e.g., crafting tree logic)
+│   ├───App.css             # Global application styles
+│   ├───App.tsx             # Main application component
+│   ├───main.tsx            # Entry point for the React application
+│   ├───types.ts            # TypeScript type definitions
+│   └───vite-env.d.ts       # Vite environment type declarations
+├───package.json            # Project dependencies and scripts
+├───tsconfig.json           # TypeScript configuration
+├───vite.config.ts          # Vite build configuration
+└───... (other config files like .gitignore, .eslintignore, etc.)
+```
+
+## 4. Main Components & Their Responsibilities
+
+-   **`App.tsx`**: The root component that orchestrates the main layout. It includes the `RecipeForm`, `RecipeList`, and `CraftingTreeViewer` components. It also handles the global import/export functionality for recipes.
+-   **`RecipeForm/RecipeForm.tsx`**:
+    -   Allows users to add new recipes or edit existing ones.
+    -   Dynamically renders input fields based on the selected `acquisitionType`.
+    -   Performs client-side validation of form inputs.
+    -   Interacts with `useRecipeStore` to add or update recipes.
+    -   Uses `useRecipeFormStore` to manage the recipe currently being edited.
+-   **`RecipeList/RecipeList.tsx`**:
+    -   Displays a list of all defined recipes.
+    -   Provides search and filtering capabilities (by item name and type).
+    -   Allows users to expand recipe details.
+    -   Enables single or bulk deletion of recipes.
+    -   Triggers the `RecipeForm` for editing a selected recipe.
+    -   Interacts with `useRecipeStore` for fetching, deleting, and selecting recipes.
+-   **`CraftingTreeViewer/CraftingTreeViewer.tsx`**:
+    -   Allows users to select a "blacksmithing" recipe as the root item.
+    -   Visualizes the crafting dependency tree for the selected item.
+    -   Displays the total raw materials required.
+    -   Highlights and lists any detected cyclic dependencies.
+    -   Utilizes `craftingTreeUtils.ts` for tree building and calculations.
+-   **`store/useRecipeStore.ts`**:
+    -   A Zustand store that holds the global state for all `Recipe` objects.
+    -   Provides actions to add, update, delete, set, and select recipes.
+    -   Persists the `recipes` and `selectedRecipeIds` state to `localStorage` using `zustand/middleware/persist`.
+-   **`store/useRecipeFormStore.ts`**:
+    -   A Zustand store specifically for managing the `recipeToEdit` state, allowing the `RecipeList` to signal to the `RecipeForm` which recipe should be loaded for editing.
+-   **`types.ts`**:
+    -   Defines all core TypeScript interfaces and types used throughout the application, including `Recipe`, `Ingredient`, `ItemType`, `AcquisitionType`, and detailed interfaces for different `Acquisition` methods (e.g., `BlacksmithingAcquisition`, `MobDropAcquisition`).
+-   **`utils/craftingTreeUtils.ts`**:
+    -   Contains the core logic for building the crafting dependency tree (`buildCraftingTree`).
+    -   Implements cycle detection within the crafting tree.
+    -   Calculates the total raw materials needed for a given tree (`calculateTotalRawMaterials`).
+    -   Defines `TreeNode` and `BuildTreeResult` interfaces.
+
+## 5. Overall System Behavior
+
+The application provides a seamless user experience for managing crafting recipes:
+
+1.  **Initialization:** On load, the application attempts to retrieve previously saved recipes from `localStorage`.
+2.  **Recipe Management:** Users can add new recipes via the `RecipeForm`. These recipes immediately appear in the `RecipeList`. Existing recipes can be edited by selecting them from the list, which populates the form for modification. Recipes can be individually or bulk deleted.
+3.  **Data Persistence:** All changes to recipes are automatically saved to `localStorage`, ensuring data persists across browser sessions.
+4.  **Crafting Tree Visualization:** For any recipe defined as "blacksmithing," users can select it in the `CraftingTreeViewer` to see its full dependency tree. The viewer dynamically calculates and displays the raw materials required and alerts the user to any crafting cycles.
+5.  **Import/Export:** Users can manually export their entire recipe collection to a JSON file or import recipes from a previously exported file. The import process includes basic validation to ensure data integrity.
+6.  **User Feedback:** Toast notifications (using `react-hot-toast`) provide immediate feedback for actions like adding, updating, deleting, importing, or exporting recipes, as well as validation errors.
+
+## 6. Deep Dive: `src/types.ts` - The Data Blueprint
+
+The `src/types.ts` file is the single source of truth for all data structures within the SBO Crafting Tree Manager application. Its primary purpose is to define the shape of the data, ensuring consistency, type safety, and clarity across all components and functionalities that interact with recipe information.
+
+### Purpose and Importance
+
+-   **Data Consistency:** By centralizing type definitions, `types.ts` ensures that all parts of the application (forms, lists, stores, utility functions) refer to the same understanding of what a "Recipe" or an "Ingredient" is. This prevents discrepancies and bugs that can arise from mismatched data structures.
+-   **Type Safety:** TypeScript leverages these definitions to provide compile-time checks. This means many common programming errors (e.g., typos in property names, assigning wrong data types) are caught *before* the code even runs, significantly reducing debugging time and improving code reliability.
+-   **Code Clarity and Readability:** When a new developer looks at a component, they can immediately understand the expected data structure by referencing the types. This acts as living documentation, making the codebase easier to read, understand, and maintain.
+-   **Facilitating Data Flow:** The types defined here dictate how data flows through the application – from user input in `RecipeForm`, to storage in `useRecipeStore`, to display in `RecipeList`, and finally to complex calculations in `craftingTreeUtils`.
+
+### Key Types and Interfaces
+
+`types.ts` defines several crucial types and interfaces that form the backbone of the application's data model:
+
+1.  **`ItemType` (Constant Object and Type Alias):**
+    -   `export const ItemType = { ... } as const;`: This defines a JavaScript object where keys and values are identical strings (e.g., `Items: 'Items'`). The `as const` assertion makes it a "readonly" object, ensuring its values are treated as literal types by TypeScript. This is particularly useful for dropdowns or categories where a fixed set of string options is needed.
+    -   `export type ItemTypeType = (typeof ItemType)[keyof typeof ItemType];`: This is a powerful TypeScript feature that derives a union type from the `ItemType` constant object. `ItemTypeType` will be a union of all the string literal values (e.g., `'Items' | 'One Handed' | 'Two Handed' | ...`). This ensures that any variable or property typed as `ItemTypeType` can *only* hold one of these predefined string values, providing strong type checking for item categories.
+
+2.  **`Ingredient` Interface:**
+    ```typescript
+    export interface Ingredient {
+      name: string;
+      quantity: number;
+    }
+    ```
+    -   Represents a single component required for a blacksmithing recipe. It clearly specifies that an ingredient must have a `name` (string) and a `quantity` (number). This interface is used within `BlacksmithingAcquisition`.
+
+3.  **`AcquisitionType` (Union Type):**
+    ```typescript
+    export type AcquisitionType =
+      | 'blacksmithing'
+      | 'mob-drop'
+      | 'merchant'
+      | 'mining'
+      | 'quest-rewards';
+    ```
+    -   This is a union of string literal types, defining all possible ways an item can be acquired in the game. This type is used as a discriminant property to differentiate between various acquisition methods.
+
+4.  **`BaseAcquisition` Interface:**
+    ```typescript
+    interface BaseAcquisition {
+      type: AcquisitionType;
+    }
+    ```
+    -   A foundational interface that all specific acquisition types extend. It ensures that every acquisition object will have a `type` property, which is crucial for TypeScript's discriminant union capabilities.
+
+5.  **Specific Acquisition Interfaces (e.g., `BlacksmithingAcquisition`, `MobDropAcquisition`):**
+    -   These interfaces extend `BaseAcquisition` and define properties specific to each acquisition method.
+    -   **Discriminant Property:** Notice how each interface explicitly sets its `type` property to a specific string literal (e.g., `type: 'blacksmithing';`). This is the "discriminant" property that allows TypeScript to intelligently narrow down the type of an `Acquisition` object based on its `type` value.
+    -   **Example: `BlacksmithingAcquisition`**
+        ```typescript
+        export interface BlacksmithingAcquisition extends BaseAcquisition {
+          type: 'blacksmithing';
+          ingredients: Ingredient[];
+          smithingSkillRequired?: number; // Optional
+        }
+        ```
+        This interface specifies that if an item is acquired via `blacksmithing`, it *must* have an array of `ingredients` and *may* have a `smithingSkillRequired`.
+
+6.  **`Acquisition` (Union Type):**
+    ```typescript
+    export type Acquisition =
+      | BlacksmithingAcquisition
+      | MobDropAcquisition
+      | MerchantAcquisition
+      | MiningAcquisition
+      | QuestRewardAcquisition;
+    ```
+    -   This is a union of all the specific acquisition interfaces. Any variable or property typed as `Acquisition` can hold an object conforming to *any one* of these specific acquisition types. This is where the power of discriminant unions comes into play: TypeScript can infer the exact type of `Acquisition` based on its `type` property, allowing for type-safe access to specific properties (e.g., if `acquisition.type === 'blacksmithing'`, TypeScript knows `acquisition.ingredients` exists).
+
+7.  **`Recipe` Interface:**
+    ```typescript
+    export interface Recipe {
+      itemName: string;
+      itemType: ItemTypeType;
+      acquisition: Acquisition;
+    }
+    ```
+    -   This is the central interface representing a complete crafting recipe. It combines `itemName` (string), `itemType` (using the `ItemTypeType` derived type), and the flexible `acquisition` property (which can be any of the defined `Acquisition` types). This interface is used extensively throughout the application, particularly in the Zustand store (`useRecipeStore`) and in the `RecipeForm` and `RecipeList` components.
+
+### Connection to the Rest of the System
+
+-   **`RecipeForm.tsx`**: The form component heavily relies on these types to define its state (`RecipeFormState`), validate user input, and construct the `Recipe` object before adding or updating it in the store. The dynamic rendering of fields based on `acquisitionType` is directly enabled by the structured `Acquisition` types.
+-   **`RecipeList.tsx`**: This component uses the `Recipe` type to display recipe details. When editing a recipe, it passes a `Recipe` object to `useRecipeFormStore`.
+-   **`useRecipeStore.ts`**: The Zustand store is typed with `Recipe[]`, ensuring that only valid `Recipe` objects are stored and manipulated. The `setRecipes` action, for instance, validates imported data against the `Recipe` structure.
+-   **`craftingTreeUtils.ts`**: The utility functions for building the crafting tree and calculating raw materials consume `Recipe` objects and rely on the `BlacksmithingAcquisition` type to extract ingredients. The `TreeNode` interface also uses `itemName` and `quantity` which are consistent with `Ingredient` and `Recipe` types.
+-   **Import/Export Logic (`App.tsx`):** The validation logic during import (`handleImport`) directly checks if the imported JSON data conforms to the `Recipe` and `Acquisition` types, ensuring data integrity.
+
+In summary, `src/types.ts` is not just a collection of definitions; it's the foundational contract that governs data integrity and interaction across the entire SBO Crafting Tree Manager application. It empowers developers with strong type checking, leading to more robust, maintainable, and understandable code.

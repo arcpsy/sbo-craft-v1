@@ -13,8 +13,18 @@ import type {
 } from '../../types';
 import { toast } from 'react-hot-toast';
 
+/**
+ * Props for the RecipeForm component.
+ * Currently empty, but can be extended if parent components need to pass data.
+ */
 interface RecipeFormProps {}
 
+/**
+ * Defines the shape of the form data state within the RecipeForm component.
+ * This mirrors the `Recipe` type but flattens acquisition-specific fields
+ * to manage them uniformly in the form. This allows for a single state object
+ * to handle all possible input fields across different acquisition types.
+ */
 interface RecipeFormState {
   itemName: string;
   itemType: ItemTypeType;
@@ -33,6 +43,11 @@ interface RecipeFormState {
   questFloor?: number;
 }
 
+/**
+ * Initial state for the `formData` used in the RecipeForm.
+ * Ensures the form starts with default values when creating a new recipe,
+ * providing a clean slate for user input.
+ */
 const initialFormData: RecipeFormState = {
   itemName: '',
   itemType: ItemType.Items,
@@ -47,6 +62,11 @@ const initialFormData: RecipeFormState = {
   questFloor: undefined,
 };
 
+/**
+ * Defines the shape of the errors object used for form validation.
+ * Each property corresponds to a form field that might have a validation error message.
+ * This allows for dynamic display of error messages next to their respective input fields.
+ */
 interface Errors {
   itemName?: string;
   itemType?: string;
@@ -61,21 +81,43 @@ interface Errors {
   questFloor?: string;
 }
 
+/**
+ * `RecipeForm` component allows users to define new crafting recipes or edit existing ones.
+ * It dynamically renders input fields based on the selected acquisition type and handles form submission,
+ * including validation and interaction with the global recipe store.
+ * It serves as the primary interface for managing recipe data within the application.
+ */
 const RecipeForm: React.FC<RecipeFormProps> = () => {
+  // Access global state and actions from the recipe store (Zustand).
+  // `recipes` for checking duplicates, `addRecipe` for new entries, `updateRecipe` for modifications.
   const { recipes, addRecipe, updateRecipe } = useRecipeStore();
+  // Access state and actions from the recipe form-specific store (Zustand) for managing the recipe being edited.
+  // `recipeToEdit` holds the recipe object if in edit mode, `setRecipeToEdit` updates it.
   const { recipeToEdit, setRecipeToEdit } = useRecipeFormStore();
 
+  // Component state for managing form input values.
   const [formData, setFormData] = useState<RecipeFormState>(initialFormData);
+  // Stores the original item name when editing a recipe. Used to identify the recipe to update
+  // and to correctly handle duplicate name validation.
   const [oldItemName, setOldItemName] = useState<string | null>(null);
+  // Stores validation error messages for each form field.
   const [errors, setErrors] = useState<Errors>({});
 
+  /**
+   * Effect hook to populate the form when a `recipeToEdit` is set (i.e., when editing an existing recipe).
+   * It extracts relevant data from the `recipeToEdit` object and sets the form state.
+   * If `recipeToEdit` is null, the form resets to its initial state for new recipe creation.
+   * This ensures the form accurately reflects the data of the recipe being edited.
+   */
   useEffect(() => {
     if (recipeToEdit) {
-      setOldItemName(recipeToEdit.itemName);
+      setOldItemName(recipeToEdit.itemName); // Store the original name for updates
       setFormData({
         itemName: recipeToEdit.itemName,
         itemType: recipeToEdit.itemType,
         acquisitionType: recipeToEdit.acquisition.type,
+        // Conditionally set acquisition-specific fields based on the acquisition type.
+        // Type assertions are used here to safely access properties specific to each acquisition type.
         ingredients:
           recipeToEdit.acquisition.type === 'blacksmithing'
             ? (recipeToEdit.acquisition as BlacksmithingAcquisition).ingredients
@@ -111,11 +153,19 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
             : undefined,
       });
     } else {
+      // Reset form for new recipe creation when no recipe is being edited.
       setFormData(initialFormData);
       setOldItemName(null);
     }
-  }, [recipeToEdit]);
+  }, [recipeToEdit]); // Re-run effect whenever `recipeToEdit` changes.
 
+  /**
+   * Handles changes to general form input fields (text, number, select).
+   * This is a memoized callback to prevent unnecessary re-renders of child components.
+   * It updates the `formData` state based on the input's `name` and `value`.
+   * Converts numeric inputs to `number` or `undefined` as appropriate, ensuring correct data types.
+   * @param e The change event from the input element.
+   */
   const handleChange = useCallback(
     (
       e: React.ChangeEvent<
@@ -127,6 +177,8 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
       setFormData((prevData) => {
         let updatedValue: string | number | undefined | AcquisitionType = value;
 
+        // Handle specific fields that require number conversion or remain as string.
+        // This ensures that number inputs are stored as numbers, not strings.
         if (name === 'itemName' || name === 'itemType') {
           updatedValue = value;
         } else if (
@@ -138,19 +190,34 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
             'questFloor',
           ].includes(name)
         ) {
+          // Convert to number, or undefined if the input string is empty.
           updatedValue = value === '' ? undefined : Number(value);
         }
 
         return { ...prevData, [name]: updatedValue };
       });
     },
-    [],
+    [], // Dependencies: No external dependencies, so this function is memoized once.
   );
 
+  /**
+   * Handles changes to the acquisition type selection (tabs).
+   * Updates the `acquisitionType` in `formData` and implicitly changes
+   * which acquisition-specific fields are rendered by `renderAcquisitionFields`.
+   * @param type The selected `AcquisitionType` (e.g., 'blacksmithing', 'mob-drop').
+   */
   const handleAcquisitionTypeChange = (type: AcquisitionType) => {
     setFormData((prevData) => ({ ...prevData, acquisitionType: type }));
   };
 
+  /**
+   * Handles changes to individual ingredient fields within the blacksmithing acquisition type.
+   * This is a memoized callback.
+   * It updates the `name` or `quantity` of a specific ingredient in the `ingredients` array
+   * based on the input field that changed.
+   * @param index The index of the ingredient in the `ingredients` array.
+   * @param e The change event from the ingredient input element.
+   */
   const handleIngredientChange = useCallback(
     (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
@@ -162,23 +229,42 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
         ingredients: newIngredients,
       }));
     },
-    [formData.ingredients],
+    [formData.ingredients], // Re-create this callback if the `ingredients` array reference changes.
   );
 
+  /**
+   * Adds a new empty ingredient row to the `ingredients` array.
+   * This is a memoized callback.
+   * Provides a default structure for a new ingredient, ready for user input.
+   */
   const handleAddIngredient = useCallback(() => {
     setFormData((prevData) => ({
       ...prevData,
       ingredients: [...prevData.ingredients, { name: '', quantity: 1 }],
     }));
-  }, []);
+  }, []); // No dependencies, so this function is memoized once.
 
+  /**
+   * Removes an ingredient row from the `ingredients` array by its index.
+   * This is a memoized callback.
+   * Filters out the ingredient at the specified index, effectively deleting it from the list.
+   * @param index The index of the ingredient to remove.
+   */
   const handleRemoveIngredient = useCallback((index: number) => {
     setFormData((prevData) => ({
       ...prevData,
       ingredients: prevData.ingredients.filter((_, i) => i !== index),
     }));
-  }, []);
+  }, []); // No dependencies, so this function is memoized once.
 
+  /**
+   * Handles changes to individual mob source fields within the mob-drop acquisition type.
+   * This is a memoized callback.
+   * Updates the `mobName`, `mobType`, or `floor` of a specific mob source.
+   * Converts the `floor` value to a number.
+   * @param index The index of the mob source in the `mobSources` array.
+   * @param e The change event from the mob source input/select element.
+   */
   const handleMobSourceChange = useCallback(
     (
       index: number,
@@ -188,7 +274,7 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
       const newMobSources = [...formData.mobSources];
       newMobSources[index] = {
         ...newMobSources[index],
-        [name]: name === 'floor' ? Number(value) : value,
+        [name]: name === 'floor' ? Number(value) : value, // Convert floor to number
       };
 
       setFormData((prevData) => ({
@@ -196,9 +282,14 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
         mobSources: newMobSources,
       }));
     },
-    [formData.mobSources],
+    [formData.mobSources], // Re-create this callback if the `mobSources` array reference changes.
   );
 
+  /**
+   * Adds a new empty mob source row to the `mobSources` array.
+   * This is a memoized callback.
+   * Provides a default structure for a new mob source, ready for user input.
+   */
   const handleAddMobSource = useCallback(() => {
     setFormData((prevData) => ({
       ...prevData,
@@ -207,23 +298,38 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
         { mobName: '', mobType: 'Minion', floor: 1 },
       ],
     }));
-  }, []);
+  }, []); // No dependencies, so this function is memoized once.
 
+  /**
+   * Removes a mob source row from the `mobSources` array by its index.
+   * This is a memoized callback.
+   * Filters out the mob source at the specified index, effectively deleting it from the list.
+   * @param index The index of the mob source to remove.
+   */
   const handleRemoveMobSource = useCallback((index: number) => {
     setFormData((prevData) => ({
       ...prevData,
       mobSources: prevData.mobSources.filter((_, i) => i !== index),
     }));
-  }, []);
+  }, []); // No dependencies, so this function is memoized once.
 
+  /**
+   * Validates the form data based on the selected acquisition type.
+   * This is a memoized callback.
+   * Sets error messages in the `errors` state and returns `true` if the form is valid, `false` otherwise.
+   * Includes checks for required fields, valid numbers (e.g., non-negative, greater than 0),
+   * and ensures item names are unique (unless editing the same item).
+   */
   const validateForm = useCallback(() => {
     const newErrors: Errors = {};
     let isValid = true;
 
+    // Validate Item Name: Ensures it's not empty and is unique.
     if (!formData.itemName.trim()) {
       newErrors.itemName = 'Item Name is required.';
       isValid = false;
     } else if (
+      // Check for duplicate item names, excluding the original name if editing.
       recipes.some(
         (recipe) =>
           recipe.itemName === formData.itemName &&
@@ -234,6 +340,8 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
       isValid = false;
     }
 
+    // Validate acquisition-specific fields based on the selected type.
+    // Each case handles the validation rules pertinent to its acquisition method.
     switch (formData.acquisitionType) {
       case 'blacksmithing':
         if (formData.ingredients.length === 0) {
@@ -305,21 +413,32 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
         break;
     }
 
-    setErrors(newErrors);
+    setErrors(newErrors); // Update the error state with any new validation messages.
     return isValid;
-  }, [formData, recipes, oldItemName]);
+  }, [formData, recipes, oldItemName]); // Dependencies: re-validate when form data, recipes, or old item name changes.
 
+  /**
+   * Handles the form submission event.
+   * This is a memoized callback.
+   * Prevents default browser form submission, validates the form, constructs a `Recipe` object
+   * based on the current form data, and then either adds a new recipe or updates an existing one
+   * using the global recipe store.
+   * Finally, it resets the form and clears any editing state, providing user feedback via toasts.
+   * @param e The form submission event.
+   */
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
-      e.preventDefault();
+      e.preventDefault(); // Prevent default browser form submission.
 
       if (!validateForm()) {
         toast.error('Please fix the errors before submitting.');
-        return;
+        return; // Stop submission if validation fails.
       }
 
-      let acquisition: Acquisition;
+      let acquisition: Acquisition; // Declare a variable to hold the specific acquisition object.
 
+      // Construct the `acquisition` object based on the selected `acquisitionType`.
+      // This ensures the correct structure for the `acquisition` field in the `Recipe` object.
       switch (formData.acquisitionType) {
         case 'blacksmithing':
           acquisition = {
@@ -355,25 +474,29 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
           };
           break;
         default:
+          // Fallback for unknown acquisition types (should not happen with proper type checking).
           throw new Error('Unknown acquisition type');
       }
 
+      // Create the final Recipe object using the form data and the constructed acquisition.
       const newRecipe: Recipe = {
         itemName: formData.itemName,
         itemType: formData.itemType,
         acquisition,
       };
 
+      // Determine whether to add a new recipe or update an existing one.
+      // This logic differentiates between creating a new recipe and saving changes to an existing one.
       if (recipeToEdit && oldItemName) {
-        updateRecipe(oldItemName, newRecipe);
+        updateRecipe(oldItemName, newRecipe); // Update existing recipe using its original name.
         toast.success(`Recipe "${newRecipe.itemName}" updated successfully!`);
       } else {
-        addRecipe(newRecipe);
+        addRecipe(newRecipe); // Add new recipe to the store.
         toast.success(`Recipe "${newRecipe.itemName}" added successfully!`);
       }
-      setRecipeToEdit(null);
-      setOldItemName(null);
-      setFormData(initialFormData);
+      setRecipeToEdit(null); // Clear editing state after submission.
+      setOldItemName(null); // Clear old item name.
+      setFormData(initialFormData); // Reset form to initial state for next input.
     },
     [
       formData,
@@ -383,9 +506,15 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
       recipeToEdit,
       setRecipeToEdit,
       oldItemName,
-    ],
+    ], // Dependencies for useCallback: ensures the function re-creates if these values change.
   );
 
+  /**
+   * Renders the acquisition-specific input fields based on the currently selected `acquisitionType`.
+   * This function uses a switch statement to conditionally render different form sections,
+   * ensuring that only relevant fields are displayed to the user.
+   * Each case returns a JSX block corresponding to a specific acquisition method.
+   */
   const renderAcquisitionFields = () => {
     switch (formData.acquisitionType) {
       case 'blacksmithing':
@@ -410,6 +539,7 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
               </span>
             )}
             <h4>Ingredients</h4>
+            {/* Renders a list of ingredient input fields, allowing dynamic addition/removal. */}
             {formData.ingredients.map((ingredient, index) => (
               <div key={index} className='ingredient-item'>
                 <input
@@ -447,6 +577,7 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
         return (
           <div className='acquisition-fields form-section'>
             <h3>Mob Drop Details</h3>
+            {/* Renders a list of mob source input fields, allowing dynamic addition/removal. */}
             {formData.mobSources.map((source, index) => (
               <div key={index} className='mob-source-item'>
                 <input
@@ -576,14 +707,22 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
     }
   };
 
+  /**
+   * Handles the cancellation of an edit operation.
+   * This is a memoized callback.
+   * Resets the `recipeToEdit` state in `useRecipeFormStore` to `null`,
+   * clears `oldItemName`, and resets the form data to its initial empty state.
+   * This effectively exits the edit mode and prepares the form for a new recipe entry.
+   */
   const handleCancelEdit = useCallback(() => {
     setRecipeToEdit(null);
     setOldItemName(null);
     setFormData(initialFormData);
-  }, [setRecipeToEdit]);
+  }, [setRecipeToEdit]); // Dependency: `setRecipeToEdit` from Zustand ensures the callback is stable.
 
   return (
     <div className='recipe-form-container card'>
+      {/* Dynamically changes the form title based on whether a recipe is being edited or a new one is being defined. */}
       <h2>{recipeToEdit ? 'Edit Recipe' : 'Define New Recipe'}</h2>
       <form onSubmit={handleSubmit}>
         <div className='form-grid'>
@@ -608,6 +747,7 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
               value={formData.itemType}
               onChange={handleChange}
             >
+              {/* Renders options for item types based on the `ItemType` enum. */}
               {Object.values(ItemType).map((type) => (
                 <option key={type} value={type}>
                   {type}
@@ -620,6 +760,7 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
           </div>
         </div>
 
+        {/* Navigation tabs for selecting the acquisition type. */}
         <div className='tabs'>
           <button
             type='button'
@@ -662,8 +803,10 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
           </button>
         </div>
 
+        {/* Content area where acquisition-specific fields are rendered based on the selected tab. */}
         <div className='tab-content'>{renderAcquisitionFields()}</div>
 
+        {/* Form action buttons: Submit and Cancel (if in edit mode). */}
         <div className='form-actions'>
           <button type='submit' className='submit-btn'>
             {recipeToEdit ? 'Update Recipe' : 'Add Recipe'}

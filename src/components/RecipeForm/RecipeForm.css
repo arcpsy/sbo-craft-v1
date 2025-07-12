@@ -1,13 +1,34 @@
 /* src/components/RecipeForm.css */
 
 .recipe-form-container {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
+  height: 400px; /* Fixed height for scrollability */
+  overflow-y: auto; /* Enable vertical scrolling */
+}
+
+/* Custom Scrollbar Styles for RecipeForm */
+.recipe-form-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.recipe-form-container::-webkit-scrollbar-track {
+  background: var(--color-background-nested);
+  border-radius: 10px;
+}
+
+.recipe-form-container::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 10px;
+}
+
+.recipe-form-container::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary-dark);
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
 }
 
@@ -16,9 +37,9 @@
 .recipe-form-container input[type='number'],
 .recipe-form-container select,
 .recipe-form-container textarea {
-  padding: var(--spacing-sm);
+  padding: var(--spacing-xs);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--border-radius-sm);
   background-color: var(--color-background-input);
   color: var(--color-text-light);
   font-size: var(--font-size-base);
@@ -51,7 +72,7 @@
   display: flex;
   flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
   gap: var(--spacing-xs); /* Smaller gap between tabs */
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
   border-bottom: 1px solid var(--color-border);
   padding-bottom: var(--spacing-xxs); /* Space for the active indicator */
 }
@@ -100,7 +121,7 @@
 }
 
 .tab-content {
-  padding: var(--spacing-lg) 0;
+  padding: var(--spacing-md) 0;
 }
 
 .form-section {
@@ -117,7 +138,7 @@
   padding: var(--spacing-sm);
   background-color: var(--color-background-nested);
   border: 1px solid var(--color-border-dark);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--border-radius-sm);
 }
 
 .ingredient-item input[type='text'],
@@ -177,8 +198,8 @@
 /* Headings within acquisition fields */
 .acquisition-fields h3,
 .acquisition-fields h4 {
-  margin-top: var(--spacing-lg);
-  margin-bottom: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
   color: var(--color-primary-light); /* Highlight these headings */
 }
 

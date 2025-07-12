@@ -3,6 +3,7 @@ import './App.css';
 import RecipeForm from './components/RecipeForm/RecipeForm';
 import RecipeList from './components/RecipeList/RecipeList';
 import CraftingTreeViewer from './components/CraftingTreeViewer/CraftingTreeViewer';
+import Header from './components/Header/Header'; // Import the new Header component
 import { useRecipeStore } from './store/useRecipeStore';
 import type { AcquisitionType } from './types';
 import { ItemType } from './types';
@@ -106,33 +107,27 @@ function App() {
   return (
     <div className='App'>
       <Toaster position='top-center' reverseOrder={false} />
-      <div className='header-row'>
-        <h1>SBO Crafting Tree</h1>
-        <div className='data-management-buttons'>
-          <button onClick={handleExport} className='export-btn'>
-            Export Recipes
-          </button>
-          <button onClick={handleImportClick} className='import-btn'>
-            Import Recipes
-          </button>
-          <input
-            type='file'
-            ref={fileInputRef}
-            onChange={handleImport}
-            style={{ display: 'none' }}
-            accept='.json'
-          />
+      <Header onExportRecipes={handleExport} onImportRecipes={handleImportClick} /> {/* Use the new Header component */}
+
+      {/* Main content area, adjusted for fixed header */}
+      <div className='main-content'>
+        <div className='form-list-row'>
+          <RecipeForm />
+          <RecipeList />
+        </div>
+
+        <div className='viewer-row'>
+          <CraftingTreeViewer />
         </div>
       </div>
 
-      <div className='form-list-row'>
-        <RecipeForm />
-        <RecipeList />
-      </div>
-
-      <div className='viewer-row'>
-        <CraftingTreeViewer />
-      </div>
+      <input
+        type='file'
+        ref={fileInputRef}
+        onChange={handleImport}
+        style={{ display: 'none' }}
+        accept='.json'
+      />
     </div>
   );
 }
