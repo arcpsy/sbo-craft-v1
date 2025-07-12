@@ -1,5 +1,7 @@
 .App {
   flex: 1;
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: row;
   background-color: transparent;
@@ -24,12 +26,31 @@
 }
 
 .main-content {
-  margin-left: 216px; /* Same as sidebar width */
-  margin-right: 216px;
+  margin-left: 216px;
+  margin-right: 332px;
   flex-grow: 1;
   padding: var(--spacing-md) var(--spacing-lg);
   display: flex;
   flex-direction: column;
+  height: 100dvh;
+  overflow-y: auto;
+}
+
+.right-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 332px; /* Fixed width for the right sidebar */
+  background-color: var(--color-background-card);
+  color: var(--color-text-light);
+  padding: var(--spacing-md);
+  box-shadow: var(--box-shadow-sm);
+  height: 100dvh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  border-left: 1px solid var(--color-border);
 }
 
 .recipe-form-container {
@@ -59,6 +80,16 @@
   flex-direction: column; /* Stack its children vertically */
 }
 
+.owned-materials-section {
+  padding: var(--spacing-md); /* Divisible by 4 */
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md); /* Divisible by 4 */
+  background-color: var(--color-background-card);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 @media (max-width: 768px) {
   .App {
     flex-direction: column;
@@ -66,5 +97,14 @@
 
   .main-content {
     margin-left: 0;
+    margin-right: 0;
+  }
+
+  .right-sidebar {
+    position: relative;
+    width: 100%;
+    height: auto;
+    border-left: none;
+    border-top: 1px solid var(--color-border);
   }
 }

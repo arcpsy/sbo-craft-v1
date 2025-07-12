@@ -1,38 +1,24 @@
 /* src/components/RecipeList/RecipeList.css */
 
+.recipe-list-container h2 {
+  font-size: var(--font-size-lg); /* Consistent with sidebar title */
+  margin-bottom: var(--spacing-md); /* Adjusted for compactness */
+}
+
 .recipe-list {
   list-style-type: none;
   padding: 0;
-  margin-top: var(--spacing-md); /* Divisible by 4 */
+  margin-top: var(--spacing-sm); /* Adjusted for compactness */
   flex-grow: 1;
   overflow-y: auto;
-  padding-right: var(--spacing-xs); /* Divisible by 4 */
-}
-
-/* Custom Scrollbar Styles for RecipeList */
-.recipe-list::-webkit-scrollbar {
-  width: 8px; /* Divisible by 4 */
-}
-
-.recipe-list::-webkit-scrollbar-track {
-  background: var(--color-background-nested);
-  border-radius: 10px; /* Not divisible by 4, but for scrollbar aesthetics */
-}
-
-.recipe-list::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 10px; /* Not divisible by 4, but for scrollbar aesthetics */
-}
-
-.recipe-list::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-dark);
+  padding-right: var(--spacing-xxs); /* Adjusted for compactness */
 }
 
 .recipe-item {
   background-color: var(--color-background-nested);
   border: 1px solid var(--color-border-dark);
-  border-radius: var(--border-radius-sm); /* Divisible by 4 */
-  margin-bottom: var(--spacing-sm); /* Divisible by 4 */
+  border-radius: var(--border-radius-sm);
+  margin-bottom: var(--spacing-xs); /* Adjusted for compactness */
   transition:
     background-color var(--transition-speed) var(--transition-ease),
     transform var(--transition-speed) var(--transition-ease);
@@ -47,30 +33,30 @@
 .recipe-header {
   display: flex;
   align-items: center;
-  padding: var(--spacing-sm); /* Divisible by 4 */
+  padding: var(--spacing-xs); /* Adjusted for compactness */
   cursor: pointer;
   user-select: none;
 }
 
 .recipe-checkbox-container {
-  margin-right: var(--spacing-sm); /* Divisible by 4 */
+  margin-right: var(--spacing-xs); /* Adjusted for compactness */
 }
 
 .recipe-title {
   margin: 0;
   flex-grow: 1;
   color: var(--color-primary-light);
-  font-size: var(--font-size-md); /* Divisible by 4 */
+  font-size: var(--font-size-base); /* Adjusted for consistency */
 }
 
 .toggle-details-btn {
   background: none;
   border: none;
-  font-size: var(--font-size-lg); /* Divisible by 4 */
+  font-size: var(--font-size-lg); /* Keep larger for visibility */
   cursor: pointer;
   color: var(--color-text-muted);
   transition: transform var(--transition-speed) var(--transition-ease);
-  padding: 0 var(--spacing-xs); /* Divisible by 4 */
+  padding: 0 var(--spacing-xxs); /* Adjusted for compactness */
 }
 
 .recipe-item.expanded .toggle-details-btn {
@@ -78,14 +64,14 @@
 }
 
 .recipe-details-expanded {
-  padding: 0 var(--spacing-sm) var(--spacing-sm) var(--spacing-sm); /* Divisible by 4 */
+  padding: 0 var(--spacing-xs) var(--spacing-xs) var(--spacing-xs); /* Adjusted for compactness */
   border-top: 1px solid var(--color-divider);
   animation: fadeIn 0.3s ease-in-out;
 }
 
 .recipe-details-expanded p {
-  margin-bottom: var(--spacing-xs); /* Divisible by 4 */
-  font-size: var(--font-size-sm); /* Divisible by 4 */
+  margin-bottom: var(--spacing-xxs); /* Adjusted for compactness */
+  font-size: var(--font-size-sm); /* Consistent with other components */
   color: var(--color-text-muted);
 }
 
@@ -94,40 +80,40 @@
 }
 
 .ingredients-list {
-  margin-top: var(--spacing-sm); /* Divisible by 4 */
+  margin-top: var(--spacing-sm); /* Adjusted for compactness */
   border-top: 1px dashed var(--color-divider);
-  padding-top: var(--spacing-sm); /* Divisible by 4 */
+  padding-top: var(--spacing-sm); /* Adjusted for compactness */
 }
 
 .ingredients-list h4 {
   margin-top: 0;
-  margin-bottom: var(--spacing-xs); /* Divisible by 4 */
+  margin-bottom: var(--spacing-xxs); /* Adjusted for compactness */
   color: var(--color-primary-light);
-  font-size: var(--font-size-base); /* Divisible by 4 */
+  font-size: var(--font-size-sm); /* Consistent with other components */
 }
 
 .ingredients-list ul {
   list-style-type: disc;
-  padding-left: var(--spacing-lg); /* Divisible by 4 */
-  margin-top: var(--spacing-xs); /* Divisible by 4 */
+  padding-left: var(--spacing-md); /* Adjusted for compactness */
+  margin-top: var(--spacing-xxs); /* Adjusted for compactness */
 }
 
 .ingredients-list li {
-  margin-bottom: var(--spacing-xxs); /* Divisible by 4 */
-  font-size: var(--font-size-sm); /* Divisible by 4 */
+  margin-bottom: var(--spacing-xxs); /* Adjusted for compactness */
+  font-size: var(--font-size-sm); /* Consistent with other components */
   color: var(--color-text-muted);
 }
 
 .recipe-actions {
   display: flex;
-  gap: var(--spacing-sm); /* Divisible by 4 */
-  margin-top: var(--spacing-md); /* Divisible by 4 */
+  gap: var(--spacing-xs); /* Adjusted for compactness */
+  margin-top: var(--spacing-sm); /* Adjusted for compactness */
   justify-content: flex-end;
 }
 
 .recipe-actions button {
-  padding: var(--spacing-xs) var(--spacing-sm); /* Divisible by 4 */
-  font-size: var(--font-size-sm); /* Divisible by 4 */
+  padding: var(--spacing-xs) var(--spacing-sm); /* Adjusted for compactness */
+  font-size: var(--font-size-sm); /* Consistent with other components */
   transition:
     background-color var(--transition-speed) var(--transition-ease),
     transform var(--transition-speed) var(--transition-ease);
@@ -144,8 +130,8 @@
 
 .filters-container {
   display: flex;
-  gap: var(--spacing-md); /* Divisible by 4 */
-  margin-bottom: var(--spacing-lg); /* Divisible by 4 */
+  gap: var(--spacing-sm); /* Adjusted for compactness */
+  margin-bottom: var(--spacing-md); /* Adjusted for compactness */
 }
 
 .search-input-wrapper {
@@ -156,11 +142,11 @@
 .search-input-wrapper input[type='text'],
 .filter-dropdown select {
   width: 100%;
-  padding: var(--spacing-xs); /* Divisible by 4 */
+  padding: var(--spacing-xs); /* Adjusted for compactness */
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-sm); /* Divisible by 4 */
+  border-radius: var(--border-radius-sm);
   box-sizing: border-box;
-  font-size: var(--font-size-base); /* Divisible by 4 */
+  font-size: var(--font-size-sm); /* Consistent with other components */
   color: var(--color-text-light);
   background-color: var(--color-background-input);
   transition:
@@ -176,13 +162,13 @@
 }
 
 .search-input-wrapper input[type='text'] {
-  padding-left: var(--spacing-lg); /* Divisible by 4 */
-  padding-right: var(--spacing-lg); /* Divisible by 4 */
+  padding-left: var(--spacing-md); /* Adjusted for compactness */
+  padding-right: var(--spacing-md); /* Adjusted for compactness */
 }
 
 .search-icon {
   position: absolute;
-  left: var(--spacing-sm); /* Divisible by 4 */
+  left: var(--spacing-xs); /* Adjusted for compactness */
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-text-muted);
@@ -190,14 +176,14 @@
 
 .clear-search-btn {
   position: absolute;
-  right: var(--spacing-sm); /* Divisible by 4 */
+  right: var(--spacing-xs); /* Adjusted for compactness */
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   color: var(--color-text-muted);
   cursor: pointer;
-  font-size: var(--font-size-base); /* Divisible by 4 */
+  font-size: var(--font-size-sm); /* Consistent with other components */
   padding: 0;
   transition:
     color var(--transition-speed) var(--transition-ease),
@@ -211,16 +197,16 @@
 
 .filter-dropdown {
   position: relative;
-  min-width: 200px; /* Divisible by 4 */
+  min-width: 150px; /* Adjusted for compactness */
 }
 
 .filter-dropdown select {
-  padding-left: var(--spacing-lg); /* Divisible by 4 */
+  padding-left: var(--spacing-md); /* Adjusted for compactness */
 }
 
 .filter-icon {
   position: absolute;
-  left: var(--spacing-sm); /* Divisible by 4 */
+  left: var(--spacing-xs); /* Adjusted for compactness */
   top: 50%;
   transform: translateY(-50%);
   color: var(--color-text-muted);
@@ -231,9 +217,9 @@
 .toast-confirm-btn {
   background-color: var(--color-primary);
   color: var(--color-text-dark);
-  padding: var(--spacing-xs) var(--spacing-sm); /* Divisible by 4 */
-  border-radius: var(--border-radius-sm); /* Divisible by 4 */
-  margin-left: var(--spacing-sm); /* Divisible by 4 */
+  padding: var(--spacing-xs) var(--spacing-sm); /* Adjusted for compactness */
+  border-radius: var(--border-radius-sm);
+  margin-left: var(--spacing-sm); /* Adjusted for compactness */
   transition:
     background-color var(--transition-speed) var(--transition-ease),
     transform var(--transition-speed) var(--transition-ease);
@@ -247,10 +233,10 @@
 .toast-cancel-btn {
   background-color: var(--color-background-nested);
   color: var(--color-text-light);
-  padding: var(--spacing-xs) var(--spacing-sm); /* Divisible by 4 */
+  padding: var(--spacing-xs) var(--spacing-sm); /* Adjusted for compactness */
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-sm); /* Divisible by 4 */
-  margin-left: var(--spacing-sm); /* Divisible by 4 */
+  border-radius: var(--border-radius-sm);
+  margin-left: var(--spacing-sm); /* Adjusted for compactness */
   transition:
     background-color var(--transition-speed) var(--transition-ease),
     transform var(--transition-speed) var(--transition-ease);
@@ -264,21 +250,29 @@
 .select-all-container {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md); /* Divisible by 4 */
-  margin-bottom: var(--spacing-md); /* Divisible by 4 */
-  padding: var(--spacing-sm); /* Divisible by 4 */
+  gap: var(--spacing-sm); /* Adjusted for compactness */
+  margin-bottom: var(--spacing-sm); /* Adjusted for compactness */
+  padding: var(--spacing-xs); /* Adjusted for compactness */
   background-color: var(--color-background-nested);
-  border-radius: var(--border-radius-sm); /* Divisible by 4 */
+  border-radius: var(--border-radius-sm);
   border: 1px solid var(--color-border-dark);
 }
 
 .select-all-container label {
   font-weight: var(--font-weight-medium);
   color: var(--color-text-light);
+  font-size: var(--font-size-sm); /* Consistent with other components */
 }
 
 .select-all-container input[type='checkbox'] {
-  margin-right: var(--spacing-xs); /* Divisible by 4 */
+  margin-right: var(--spacing-xxs); /* Adjusted for compactness */
+}
+
+.recipe-list-container p {
+  font-size: var(--font-size-sm); /* Consistent with other components */
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-top: var(--spacing-md);
 }
 
 @keyframes fadeIn {

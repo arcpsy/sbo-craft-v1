@@ -1,29 +1,20 @@
 /* src/components/RecipeForm.css */
 
-/* Custom Scrollbar Styles for RecipeForm */
-.recipe-form-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.recipe-form-container::-webkit-scrollbar-track {
-  background: var(--color-background-nested);
-  border-radius: 10px;
-}
-
-.recipe-form-container::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 10px;
-}
-
-.recipe-form-container::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-dark);
+.recipe-form-container h2 {
+  font-size: var(--font-size-lg); /* Consistent with sidebar title */
+  margin-bottom: var(--spacing-md); /* Adjusted for compactness */
 }
 
 .form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
+  gap: var(--spacing-sm); /* Smaller gap */
+  margin-bottom: var(--spacing-md); /* Adjusted for compactness */
+}
+
+.form-group label {
+  font-size: var(--font-size-sm); /* Smaller label font size */
+  margin-bottom: var(--spacing-xxs); /* Smaller margin */
 }
 
 /* General input styling for consistency */
@@ -31,12 +22,12 @@
 .recipe-form-container input[type='number'],
 .recipe-form-container select,
 .recipe-form-container textarea {
-  padding: var(--spacing-xs);
+  padding: var(--spacing-xs); /* Smaller padding */
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-sm);
   background-color: var(--color-background-input);
   color: var(--color-text-light);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm); /* Smaller font size */
   box-sizing: border-box; /* Ensure padding doesn't increase width */
   transition:
     border-color var(--transition-speed) var(--transition-ease),
@@ -62,7 +53,7 @@
 /* Error message styling */
 .error-message {
   color: var(--color-error);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs); /* Smaller font size */
   margin-top: var(--spacing-xxs);
   display: block; /* Ensures it takes its own line */
   font-weight: var(--font-weight-medium);
@@ -73,7 +64,7 @@
   display: flex;
   flex-wrap: wrap; /* Allow tabs to wrap on smaller screens */
   gap: var(--spacing-xs); /* Smaller gap between tabs */
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm); /* Adjusted for compactness */
   border-bottom: 1px solid var(--color-border);
   padding-bottom: var(--spacing-xxs); /* Space for the active indicator */
 }
@@ -84,16 +75,16 @@
   ); /* Subtle background for tabs */
   border: 1px solid transparent; /* Consistent border */
   border-bottom: none; /* Remove bottom border for active indicator */
-  padding: var(--spacing-sm) var(--spacing-md);
+  padding: var(--spacing-xs) var(--spacing-sm); /* Smaller padding */
   cursor: pointer;
   color: var(--color-text-muted);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm); /* Smaller font size */
   position: relative;
   transition:
     all var(--transition-speed) var(--transition-ease),
     transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
-  border-top-left-radius: var(--border-radius-md);
-  border-top-right-radius: var(--border-radius-md);
+  border-top-left-radius: var(--border-radius-sm);
+  border-top-right-radius: var(--border-radius-sm);
 }
 
 .tabs button:hover:not(.active) {
@@ -125,7 +116,7 @@
 }
 
 .tab-content {
-  padding: var(--spacing-md) 0;
+  padding: var(--spacing-sm) 0; /* Adjusted for compactness */
 }
 
 .form-section {
@@ -137,9 +128,9 @@
 .mob-source-item {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-sm);
-  padding: var(--spacing-sm);
+  gap: var(--spacing-sm); /* Adjusted for compactness */
+  margin-bottom: var(--spacing-sm); /* Adjusted for compactness */
+  padding: var(--spacing-sm); /* Adjusted for compactness */
   background-color: var(--color-background-nested);
   border: 1px solid var(--color-border-dark);
   border-radius: var(--border-radius-sm);
@@ -160,11 +151,13 @@
 .mob-source-item select {
   flex-grow: 1; /* Allow inputs to take available space */
   margin: 0; /* Reset margin from general form-group */
+  padding: var(--spacing-xs); /* Smaller padding */
+  font-size: var(--font-size-sm); /* Smaller font size */
 }
 
 .ingredient-item input[name='quantity'] {
   flex-grow: 0; /* Don't let quantity input grow */
-  width: 80px; /* Fixed width for quantity */
+  width: 60px; /* Adjusted fixed width for quantity */
   text-align: center;
 }
 
@@ -174,7 +167,7 @@
   background-color: var(--color-error);
   color: var(--color-text-light); /* Changed to light for better contrast */
   padding: var(--spacing-xxs) var(--spacing-xs); /* Smaller padding */
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-sm); /* Smaller font size */
   border-radius: var(--border-radius-sm);
   flex-shrink: 0; /* Prevent button from shrinking */
   transition:
@@ -194,10 +187,10 @@
     --color-tertiary
   ); /* Use a different color for add buttons */
   color: var(--color-text-dark);
-  margin-top: var(--spacing-md);
-  padding: var(--spacing-sm) var(--spacing-md);
+  margin-top: var(--spacing-md); /* Adjusted for compactness */
+  padding: var(--spacing-sm) var(--spacing-md); /* Adjusted for compactness */
   border-radius: var(--border-radius-md);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm); /* Smaller font size */
   transition:
     background-color var(--transition-speed) var(--transition-ease),
     transform var(--transition-speed) var(--transition-ease);
@@ -211,9 +204,9 @@
 /* Submit button styling */
 .submit-btn {
   width: auto;
-  padding: var(--spacing-md) var(--spacing-lg); /* Larger padding */
-  font-size: var(--font-size-md);
-  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg); /* Adjusted for compactness */
+  font-size: var(--font-size-md); /* Adjusted for compactness */
+  margin-top: var(--spacing-lg); /* Adjusted for compactness */
   font-weight: var(--font-weight-bold);
   transition:
     background-color var(--transition-speed) var(--transition-ease),
@@ -229,9 +222,9 @@
 .acquisition-fields h3,
 .acquisition-fields h4 {
   margin-top: var(--spacing-md);
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm); /* Adjusted for compactness */
   color: var(--color-primary-light);
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-md); /* Adjusted for compactness */
 }
 
 @keyframes fadeIn {
@@ -246,8 +239,8 @@
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
+  gap: var(--spacing-md); /* Adjusted for compactness */
+  margin-top: var(--spacing-lg); /* Adjusted for compactness */
 }
 
 .form-actions .submit-btn {
@@ -259,9 +252,9 @@
   background-color: var(--color-background-nested);
   color: var(--color-text-light);
   border: 1px solid var(--color-border);
-  padding: var(--spacing-md) var(--spacing-lg); /* Match submit button padding */
-  font-size: var(--font-size-md); /* Match submit button font size */
-  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md) var(--spacing-lg); /* Adjusted for compactness */
+  font-size: var(--font-size-md); /* Adjusted for compactness */
+  margin-top: var(--spacing-lg); /* Adjusted for compactness */
   transition:
     background-color var(--transition-speed) var(--transition-ease),
     transform var(--transition-speed) var(--transition-ease);

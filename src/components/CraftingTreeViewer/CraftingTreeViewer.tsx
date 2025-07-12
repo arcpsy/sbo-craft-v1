@@ -1,5 +1,5 @@
 // src/components/CraftingTreeViewer/CraftingTreeViewer.tsx
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import './CraftingTreeViewer.css';
 import { useRecipeStore } from '../../store/useRecipeStore';
 import { useOwnedMaterialsStore } from '../../store/useOwnedMaterialsStore';
@@ -10,12 +10,7 @@ import {
   // @ts-ignore
   type BuildTreeResult,
 } from '../../utils/craftingTreeUtils';
-import type {
-  Recipe,
-  BlacksmithingAcquisition,
-  OwnedMaterial,
-} from '../../types';
-import { toast } from 'react-hot-toast';
+import type { Recipe, BlacksmithingAcquisition } from '../../types';
 
 /**
  * Props for the TreeNodeComponent.
@@ -96,12 +91,7 @@ const TreeNodeComponent: React.FC<TreeNodeProps> = ({ node, depth }) => {
 const CraftingTreeViewer: React.FC = () => {
   // Access recipes from the Zustand store
   const recipes = useRecipeStore((state) => state.recipes);
-  const {
-    ownedMaterials,
-    addOwnedMaterial,
-    updateOwnedMaterial,
-    removeOwnedMaterial,
-  } = useOwnedMaterialsStore(); // Access owned materials store
+  const { ownedMaterials } = useOwnedMaterialsStore(); // Access owned materials store
 
   // State for the currently selected root item for the crafting tree
   const [selectedRootItem, setSelectedRootItem] = useState<string>('');
@@ -112,11 +102,6 @@ const CraftingTreeViewer: React.FC = () => {
     useState<TreeNode | null>(null); // Changed from totalRawMaterials
   // State to store any detected cyclic dependencies in the crafting tree
   const [detectedCycles, setDetectedCycles] = useState<string[][]>([]);
-
-  // State for adding new owned materials
-  const [newOwnedMaterialName, setNewOwnedMaterialName] = useState<string>('');
-  const [newOwnedMaterialQuantity, setNewOwnedMaterialQuantity] =
-    useState<string>(''); // Changed to string and initialized to empty
 
   // Filter recipes to get only blacksmithing recipes, as only these can form a crafting tree
   const blacksmithingRecipes = recipes.filter(
@@ -157,52 +142,6 @@ const CraftingTreeViewer: React.FC = () => {
     }
   }, [selectedRootItem, recipes, ownedMaterials]); // Add ownedMaterials to dependencies
 
-  const handleAddOwnedMaterial = useCallback(() => {
-    const quantity = Number(newOwnedMaterialQuantity); // Parse to number here
-    if (newOwnedMaterialName.trim() && !isNaN(quantity) && quantity >= 0) {
-      addOwnedMaterial({
-        itemName: newOwnedMaterialName.trim(),
-        quantity: quantity,
-      });
-      setNewOwnedMaterialName('');
-      setNewOwnedMaterialQuantity(''); // Reset to empty string
-      toast.success(
-        `Added ${quantity} x ${newOwnedMaterialName} to owned materials.`,
-      );
-    } else {
-      toast.error('Please enter a valid material name and quantity.');
-    }
-  }, [newOwnedMaterialName, newOwnedMaterialQuantity, addOwnedMaterial]);
-
-  const handleUpdateOwnedMaterialQuantity = useCallback(
-    (itemName: string, value: string) => {
-      const parsedQuantity = Number(value); // Use Number() for parsing
-
-      // If the input is empty or not a valid number, treat as 0 for storage.
-      // This keeps the item in the list but with 0 quantity.
-      const quantityToStore = isNaN(parsedQuantity) || parsedQuantity < 0 ? 0 : parsedQuantity;
-
-      updateOwnedMaterial(itemName, quantityToStore);
-
-      // Only show toast if quantity is actually changing to a non-zero value
-      // or if it's explicitly set to 0 by user input (not just backspacing to empty).
-      if (quantityToStore > 0) {
-        toast.success(`Updated ${itemName} quantity to ${quantityToStore}.`);
-      } else if (value.trim() === '0') { // User explicitly typed '0'
-        toast.success(`Set ${itemName} quantity to 0.`);
-      }
-    },
-    [updateOwnedMaterial],
-  );
-
-  const handleRemoveOwnedMaterial = useCallback(
-    (itemName: string) => {
-      removeOwnedMaterial(itemName);
-      toast.success(`Removed ${itemName} from owned materials.`);
-    },
-    [removeOwnedMaterial],
-  );
-
   return (
     <div className='crafting-tree-viewer-container card'>
       <h2>Crafting Tree Viewer</h2>
@@ -225,62 +164,7 @@ const CraftingTreeViewer: React.FC = () => {
         </select>
       </div>
 
-      {/* Section for managing owned materials */}
-      <div className='owned-materials-section card'>
-        <h3>Materials on Hand</h3>
-        <div className='add-material-form'>
-          <input
-            type='text'
-            placeholder='Material Name'
-            value={newOwnedMaterialName}
-            onChange={(e) => setNewOwnedMaterialName(e.target.value)}
-          />
-          <input
-            type='number'
-            placeholder='Quantity'
-            value={newOwnedMaterialQuantity} /* Directly use string state */
-            onChange={(e) =>
-              setNewOwnedMaterialQuantity(e.target.value) /* Keep as string initially */
-            }
-            min='0'
-          />
-          <button onClick={handleAddOwnedMaterial}>Add Material</button>
-        </div>
-
-        {ownedMaterials.length > 0 && (
-          <ul className='owned-materials-list'>
-            {ownedMaterials.map((material) => (
-              <li key={material.itemName} className='owned-material-item'>
-                <span>
-                  {material.itemName} (x{material.quantity})
-                </span>
-                <div className='material-actions'>
-                  <input
-                    type='number'
-                    value={material.quantity === 0 ? '' : material.quantity.toString()} /* Display empty string for 0 to allow backspacing */
-                    onChange={(e) =>
-                      handleUpdateOwnedMaterialQuantity(
-                        material.itemName,
-                        e.target.value,
-                      )
-                    }
-                    min='0'
-                  />
-                  <button
-                    onClick={() => handleRemoveOwnedMaterial(material.itemName)}
-                    className='remove-material-btn'
-                  >
-                    Remove
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-        {ownedMaterials.length === 0 && (
-          <p>No materials on hand. Add some above!</p>
-        )}
-      </div>
+      {/* OwnedMaterials component will be rendered here by App.tsx */}
 
       {/* Message displayed if no crafting tree is found for the selected item */}
       {selectedRootItem && !craftingTree && (

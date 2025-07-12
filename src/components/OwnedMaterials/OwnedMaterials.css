@@ -1,0 +1,168 @@
+/* src/components/OwnedMaterials/OwnedMaterials.css */
+
+.owned-materials-section h3 {
+  margin-bottom: var(--spacing-sm); /* Smaller margin */
+  color: var(--color-text-light);
+  font-size: var(--font-size-lg); /* Slightly smaller heading */
+}
+
+.add-material-form {
+  display: grid;
+  grid-template-columns: 1fr auto; /* Two columns for the second row: Quantity and Button */
+  grid-template-rows: auto auto; /* Two rows */
+  gap: var(--spacing-xs); /* Smaller gap */
+  margin-bottom: var(--spacing-sm); /* Smaller margin */
+  align-items: center;
+}
+
+.add-material-form input[type='text'],
+.add-material-form input[type='number'] {
+  grid-column: 1 / -1; /* Span all columns for the first row */
+  grid-row: 1; /* First row */
+  padding: var(--spacing-xxs) var(--spacing-xs); /* Smaller padding */
+  font-size: var(--font-size-sm); /* Smaller font size */
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm); /* Divisible by 4 */
+  background-color: var(--color-background-input);
+  color: var(--color-text-light);
+  box-sizing: border-box;
+  transition:
+    border-color var(--transition-speed) var(--transition-ease),
+    box-shadow var(--transition-speed) var(--transition-ease);
+}
+
+.add-material-form input[type='number'] {
+  grid-column: 1 / 2; /* First column of the second row */
+  grid-row: 2; /* Second row */
+  text-align: center;
+}
+
+/* Placeholder styling */
+.add-material-form input::placeholder,
+.material-actions input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+.add-material-form button {
+  grid-column: 2 / 3; /* Second column of the second row */
+  grid-row: 2; /* Second row */
+  width: auto; /* Allow button to size naturally */
+  padding: var(--spacing-xxs) var(--spacing-xs); /* Smaller padding */
+  font-size: var(--font-size-sm); /* Smaller font size */
+  background-color: var(--color-tertiary);
+  color: var(--color-text-dark);
+  border-radius: var(--border-radius-sm); /* Divisible by 4 */
+  transition:
+    background-color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease);
+}
+
+.add-material-form button:hover {
+  background-color: #8bc34a;
+  transform: translateY(-1px);
+}
+
+.owned-materials-list {
+  list-style-type: none;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.owned-material-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xxs) var(--spacing-xs); /* Even smaller padding for compactness */
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-background-nested);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--border-radius-sm); /* Divisible by 4 */
+  margin-bottom: var(--spacing-xxs); /* Divisible by 4 */
+  color: var(--color-text-light);
+  font-size: var(--font-size-base); /* Divisible by 4 */
+  transition:
+    background-color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease);
+}
+
+.owned-material-item:last-child {
+  border-bottom: none;
+}
+
+.owned-material-item:hover {
+  background-color: var(--color-background-hover);
+  transform: translateY(-1px);
+}
+
+.owned-material-item span {
+  font-size: var(--font-size-sm); /* Smaller font size */
+  color: var(--color-text-light);
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: var(--spacing-xxs); /* Smaller margin */
+}
+
+.material-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xxs); /* Smaller gap */
+}
+
+.material-actions input {
+  width: 50px; /* Smaller width for quantity input */
+  padding: var(--spacing-xxs); /* Smaller padding */
+  font-size: var(--font-size-sm); /* Smaller font size */
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm); /* Divisible by 4 */
+  background-color: var(--color-background-input);
+  color: var(--color-text-light);
+  text-align: center;
+}
+
+.remove-material-btn {
+  background-color: var(--color-error);
+  color: white;
+  border: none;
+  border-radius: 4px; /* Make it circular */
+  cursor: pointer;
+  transition:
+    background-color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease);
+  width: 24px; /* Make it square */
+  height: 24px; /* Make it square */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0; /* Remove padding for icon button */
+}
+
+.remove-material-btn svg {
+  font-size: var(--font-size-sm); /* Increase icon size */
+  color: white; /* Ensure icon color is white for better contrast */
+}
+
+.remove-material-btn:hover {
+  background-color: #cc0000; /* Darker red on hover */
+  transform: translateY(-1px);
+}
+
+.owned-materials-section p {
+  font-size: var(--font-size-sm); /* Smaller font size */
+  color: var(--color-text-muted);
+  text-align: center;
+  margin-top: var(--spacing-sm); /* Smaller margin */
+}
+
+/* Hide spin buttons for number inputs */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield; /* Firefox */
+}

@@ -4,6 +4,7 @@ import RecipeForm from './components/RecipeForm/RecipeForm';
 import RecipeList from './components/RecipeList/RecipeList';
 import CraftingTreeViewer from './components/CraftingTreeViewer/CraftingTreeViewer';
 import Sidebar from './components/Sidebar/Sidebar';
+import OwnedMaterials from './components/OwnedMaterials/OwnedMaterials';
 import { useRecipeStore } from './store/useRecipeStore';
 import { useOwnedMaterialsStore } from './store/useOwnedMaterialsStore';
 import { ItemType } from './types';
@@ -146,7 +147,7 @@ function App() {
           onImportFileChange={handleImport}
         />
 
-        <div className='main-content'>
+        <div className='main-content scrollbar-custom'>
           {/* Removed main-content-header */}
           <Routes>
             <Route
@@ -157,6 +158,9 @@ function App() {
             <Route path='/view-recipes' element={<RecipeList />} />
             <Route path='/crafting-tree' element={<CraftingTreeViewer />} />
           </Routes>
+        </div>
+        <div className='right-sidebar'>
+          <OwnedMaterials />
         </div>
       </div>
     </BrowserRouter>

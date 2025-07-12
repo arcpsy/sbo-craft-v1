@@ -8,3 +8,30 @@
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+
+/* Subtle custom scrollbar */
+.scrollbar-custom {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: var(--color-scroll-thumb) var(--color-scroll-track);
+}
+
+/* Chrome, Safari, Edge */
+.scrollbar-custom::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-track {
+  background: var(--color-scroll-track, transparent);
+  border-radius: 10px;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb {
+  background-color: var(--color-scroll-thumb, rgba(255, 255, 255, 0.1));
+  border-radius: 10px;
+  transition: background-color 0.3s;
+}
+
+.scrollbar-custom::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-scroll-thumb-hover, rgba(255, 255, 255, 0.2));
+}
