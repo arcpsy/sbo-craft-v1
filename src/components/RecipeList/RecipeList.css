@@ -7,7 +7,7 @@
   border: 1px solid var(--color-border);
   display: flex;
   flex-direction: column; /* Make container a flex column */
-  height: 400px; /* Fixed height for the entire card */
+  height: 520px; /* Increased height for the entire card */
   /* Removed overflow-y: auto from here, as the list itself will scroll */
 }
 
@@ -62,7 +62,7 @@
 }
 
 .recipe-checkbox-container {
-  margin-right: var(--spacing-sm);
+  margin-right: var(--spacing-sm); /* Adjusted from md */
 }
 
 .recipe-title {
@@ -129,7 +129,7 @@
 .recipe-actions {
   display: flex;
   gap: var(--spacing-sm);
-  margin-top: var(--spacing-md);
+  margin-top: var(--spacing-md); /* Adjusted from md */
   justify-content: flex-end;
 }
 

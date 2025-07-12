@@ -2,7 +2,7 @@
 
 .recipe-form-container {
   padding: var(--spacing-md);
-  height: 400px; /* Fixed height for scrollability */
+  height: 520px; /* Increased height for scrollability */
   overflow-y: auto; /* Enable vertical scrolling */
 }
 
