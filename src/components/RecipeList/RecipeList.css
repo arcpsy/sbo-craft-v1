@@ -70,13 +70,13 @@
   margin: 0;
   flex-grow: 1;
   color: var(--color-primary-light);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-md); /* Adjusted to new md font size */
 }
 
 .toggle-details-btn {
   background: none;
   border: none;
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-lg); /* Adjusted to new lg font size */
   cursor: pointer;
   color: var(--color-text-muted);
   transition: transform var(--transition-speed) var(--transition-ease);
@@ -113,6 +113,7 @@
   margin-top: 0;
   margin-bottom: var(--spacing-xs);
   color: var(--color-primary-light);
+  font-size: var(--font-size-base); /* Adjusted to new base font size */
 }
 
 .ingredients-list ul {

@@ -54,7 +54,7 @@ h4 {
 h1 {
   text-align: center;
   margin-bottom: var(--spacing-xl);
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-xxl); /* Using the new smaller xxl font size */
 }
 
 .card {
@@ -86,7 +86,7 @@ h1 {
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-sm);
   box-sizing: border-box;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-base); /* Using the new smaller base font size */
   color: var(--color-text-light);
   background-color: var(--color-background-input);
   /* Enhanced transition for a smoother feel */
@@ -109,7 +109,7 @@ button {
   border: none;
   border-radius: var(--border-radius-sm);
   cursor: pointer;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-base); /* Using the new smaller base font size */
   font-weight: var(--font-weight-medium);
   /* Enhanced transition and subtle lift on hover */
   transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease);

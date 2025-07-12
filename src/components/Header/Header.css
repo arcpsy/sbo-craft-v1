@@ -26,7 +26,7 @@
 
 .header-left .app-title {
   margin: 0;
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-xl); /* Using the new smaller xl font size */
   font-weight: var(--font-weight-bold);
   color: var(--color-primary); /* Using primary color for title */
 }
@@ -43,7 +43,7 @@
   padding: var(--spacing-sm) var(--spacing-sm); /* Consistent padding for buttons */
   border-radius: var(--border-radius-md);
   cursor: pointer;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-base); /* Using the new smaller base font size */
   font-weight: var(--font-weight-medium);
   transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
 }

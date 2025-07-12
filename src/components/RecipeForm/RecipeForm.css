@@ -42,7 +42,7 @@
   border-radius: var(--border-radius-sm);
   background-color: var(--color-background-input);
   color: var(--color-text-light);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-base); /* Using the new smaller base font size */
   box-sizing: border-box; /* Ensure padding doesn't increase width */
   transition:
     border-color var(--transition-speed) var(--transition-ease),
@@ -61,7 +61,7 @@
 /* Error message styling */
 .error-message {
   color: var(--color-error);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-sm); /* Using the new smaller sm font size */
   margin-top: var(--spacing-xxs);
   display: block; /* Ensures it takes its own line */
   font-weight: var(--font-weight-medium);
@@ -86,7 +86,7 @@
   padding: var(--spacing-sm) var(--spacing-md);
   cursor: pointer;
   color: var(--color-text-muted);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-base); /* Using the new smaller base font size */
   position: relative;
   transition: all var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
   border-top-left-radius: var(--border-radius-md);
@@ -169,7 +169,7 @@
   background-color: var(--color-error);
   color: var(--color-text-light); /* Changed to light for better contrast */
   padding: var(--spacing-xxs) var(--spacing-xs); /* Smaller padding */
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-sm); /* Using the new smaller sm font size */
   border-radius: var(--border-radius-sm);
   flex-shrink: 0; /* Prevent button from shrinking */
   transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
@@ -202,7 +202,7 @@
 .submit-btn {
   width: auto;
   padding: var(--spacing-md) var(--spacing-lg); /* Larger padding */
-  font-size: var(--font-size-md);
+  font-size: var(--font-size-md); /* Using the new smaller md font size */
   margin-top: var(--spacing-lg);
   font-weight: var(--font-weight-bold);
   transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
@@ -219,6 +219,7 @@
   margin-top: var(--spacing-md);
   margin-bottom: var(--spacing-sm);
   color: var(--color-primary-light); /* Highlight these headings */
+  font-size: var(--font-size-md); /* Using the new smaller md font size */
 }
 
 @keyframes fadeIn {
@@ -247,7 +248,7 @@
   color: var(--color-text-light);
   border: 1px solid var(--color-border);
   padding: var(--spacing-md) var(--spacing-lg); /* Match submit button padding */
-  font-size: var(--font-size-md); /* Match submit button font size */
+  font-size: var(--font-size-md); /* Using the new smaller md font size */
   margin-top: var(--spacing-lg);
   transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
 }

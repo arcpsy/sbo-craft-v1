@@ -139,3 +139,11 @@ export interface Recipe {
   itemType: ItemTypeType; // The category of the item (e.g., 'Armor', 'One Handed')
   acquisition: Acquisition; // Details on how the item is acquired, using the discriminant union
 }
+
+/**
+ * Represents a material that the user already possesses.
+ */
+export interface OwnedMaterial {
+  itemName: string;
+  quantity: number;
+}

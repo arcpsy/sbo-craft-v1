@@ -5,6 +5,7 @@ import {
   type Ingredient,
   type Recipe,
   type BlacksmithingAcquisition,
+  type OwnedMaterial, // Import OwnedMaterial
 } from '../types';
 
 /**
@@ -131,12 +132,15 @@ export const buildCraftingTree = (
 };
 
 /**
- * Calculates the total quantities of all raw (non-crafted) materials needed for a given crafting tree.
+ * Calculates the total quantities of all raw (non-crafted) materials needed for a given crafting tree,
+ * optionally accounting for materials the user already possesses.
  * @param treeNode The root TreeNode of the crafting tree.
+ * @param ownedMaterials Optional: A Map of materials the user already owns (itemName -> quantity).
  * @returns A Map where keys are raw material names (string) and values are their total required quantities (number).
  */
 export const calculateTotalRawMaterials = (
   treeNode: TreeNode,
+  ownedMaterials: Map<string, number> = new Map(), // Added optional ownedMaterials parameter
 ): Map<string, number> => {
   const totals = new Map<string, number>();
 
@@ -153,15 +157,21 @@ export const calculateTotalRawMaterials = (
     }
 
     // Calculate the actual quantity needed at this level based on previous multipliers
-    const actualQuantity = node.quantity * multiplier;
+    let actualQuantity = node.quantity * multiplier;
 
     // If it's a raw material (not crafted)
     if (!node.isCrafted) {
-      // Add or update its total quantity
-      totals.set(
-        node.itemName,
-        (totals.get(node.itemName) || 0) + actualQuantity,
-      );
+      // Subtract owned materials from the required quantity
+      const owned = ownedMaterials.get(node.itemName) || 0;
+      actualQuantity = Math.max(0, actualQuantity - owned);
+
+      if (actualQuantity > 0) {
+        // Add or update its total quantity only if still needed
+        totals.set(
+          node.itemName,
+          (totals.get(node.itemName) || 0) + actualQuantity,
+        );
+      }
     } else if (node.children) {
       // If it's a crafted item, recurse into its children
       for (const child of node.children) {

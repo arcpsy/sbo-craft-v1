@@ -34,10 +34,12 @@
 .crafted-item {
   font-weight: var(--font-weight-medium);
   color: var(--color-primary);
+  font-size: var(--font-size-base); /* Adjusted to new base font size */
 }
 
 .raw-material {
   color: var(--color-secondary);
+  font-size: var(--font-size-base); /* Adjusted to new base font size */
 }
 
 .node-type-label {
@@ -102,4 +104,115 @@
   padding: var(--spacing-xs);
   border-radius: var(--border-radius-sm);
   margin-bottom: var(--spacing-xs);
+}
+
+/* New styles for Owned Materials Section */
+.owned-materials-section {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  background-color: var(--color-background-card);
+}
+
+.owned-materials-section h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-primary-light);
+}
+
+.add-material-form {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.add-material-form input[type='text'],
+.add-material-form input[type='number'] {
+  flex-grow: 1;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-background-input);
+  color: var(--color-text-light);
+  font-size: var(--font-size-base);
+}
+
+.add-material-form button {
+  background-color: var(--color-tertiary);
+  color: var(--color-text-dark);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-base);
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease);
+}
+
+.add-material-form button:hover {
+  background-color: #8bc34a;
+  transform: translateY(-1px);
+}
+
+.owned-materials-list {
+  list-style-type: none;
+  padding: 0;
+  margin-top: var(--spacing-md);
+}
+
+.owned-material-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--color-background-nested);
+  border: 1px solid var(--color-border-dark);
+  border-radius: var(--border-radius-sm);
+  padding: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  color: var(--color-text-light);
+  font-size: var(--font-size-base);
+}
+
+.owned-material-item span {
+  flex-grow: 1;
+}
+
+.material-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: center;
+}
+
+.material-actions input[type='number'] {
+  width: 60px; /* Smaller width for quantity input */
+  padding: var(--spacing-xxs);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  background-color: var(--color-background-input);
+  color: var(--color-text-light);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.material-actions button.remove-material-btn {
+  background-color: var(--color-error);
+  color: var(--color-text-light);
+  padding: var(--spacing-xxs) var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease);
+}
+
+.material-actions button.remove-material-btn:hover {
+  background-color: #cc2222;
+  transform: translateY(-1px);
+}
+
+.all-materials-met-message {
+  color: var(--color-success);
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background-color: rgba(0, 204, 102, 0.1);
+  border: 1px solid var(--color-success);
+  border-radius: var(--border-radius-md);
 }

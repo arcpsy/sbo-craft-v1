@@ -1,17 +1,17 @@
-// src/components/CraftingTreeViewer.tsx
-import React, { useState, useEffect } from 'react';
+// src/components/CraftingTreeViewer/CraftingTreeViewer.tsx
+import React, { useState, useEffect, useCallback } from 'react';
 import './CraftingTreeViewer.css';
 import { useRecipeStore } from '../../store/useRecipeStore';
+import { useOwnedMaterialsStore } from '../../store/useOwnedMaterialsStore'; // Import the new store
 import {
   buildCraftingTree,
   calculateTotalRawMaterials,
   type TreeNode,
   // @ts-ignore
   type BuildTreeResult,
-} from '../../utils/craftingTreeUtils'; // ✅ Import BuildTreeResult
-import type { Recipe, BlacksmithingAcquisition } from '../../types';
-
-import './CraftingTreeViewer.css';
+} from '../../utils/craftingTreeUtils';
+import type { Recipe, BlacksmithingAcquisition, OwnedMaterial } from '../../types'; // Import OwnedMaterial
+import { toast } from 'react-hot-toast';
 
 /**
  * Props for the TreeNodeComponent.
@@ -65,7 +65,7 @@ const TreeNodeComponent: React.FC<TreeNodeProps> = ({ node, depth }) => {
         )}
         {/* Display cycle detection warning if a cycle is detected at this node */}
         {node.isCyclic &&
-          node.itemName !== 'CYCLE DETECTED!' && ( // ✅ Display only for the actual cyclic item
+          node.itemName !== 'CYCLE DETECTED!' && (
             <span className='cycle-detected-label'> [Cyclic Dependency!]</span>
           )}
       </div>
@@ -93,6 +93,8 @@ const TreeNodeComponent: React.FC<TreeNodeProps> = ({ node, depth }) => {
 const CraftingTreeViewer: React.FC = () => {
   // Access recipes from the Zustand store
   const recipes = useRecipeStore((state) => state.recipes);
+  const { ownedMaterials, addOwnedMaterial, updateOwnedMaterial, removeOwnedMaterial } = useOwnedMaterialsStore(); // Access owned materials store
+
   // State for the currently selected root item for the crafting tree
   const [selectedRootItem, setSelectedRootItem] = useState<string>('');
   // State to store the generated crafting tree (root TreeNode)
@@ -102,7 +104,11 @@ const CraftingTreeViewer: React.FC = () => {
     Map<string, number>
   >(new Map());
   // State to store any detected cyclic dependencies in the crafting tree
-  const [detectedCycles, setDetectedCycles] = useState<string[][]>([]); // ✅ New state for detected cycles
+  const [detectedCycles, setDetectedCycles] = useState<string[][]>([]);
+
+  // State for adding new owned materials
+  const [newOwnedMaterialName, setNewOwnedMaterialName] = useState<string>('');
+  const [newOwnedMaterialQuantity, setNewOwnedMaterialQuantity] = useState<number>(1);
 
   // Filter recipes to get only blacksmithing recipes, as only these can form a crafting tree
   const blacksmithingRecipes = recipes.filter(
@@ -113,13 +119,14 @@ const CraftingTreeViewer: React.FC = () => {
   useEffect(() => {
     if (selectedRootItem) {
       // Build the crafting tree and detect cycles
-      const { tree, cycles } = buildCraftingTree(selectedRootItem, recipes); // ✅ Destructure result
+      const { tree, cycles } = buildCraftingTree(selectedRootItem, recipes);
       setCraftingTree(tree);
-      setDetectedCycles(cycles); // ✅ Set detected cycles
+      setDetectedCycles(cycles);
 
-      // Calculate total raw materials if a tree was successfully built
+      // Calculate total raw materials if a tree was successfully built, accounting for owned materials
       if (tree) {
-        setTotalRawMaterials(calculateTotalRawMaterials(tree));
+        const ownedMaterialsMap = new Map(ownedMaterials.map(m => [m.itemName, m.quantity]));
+        setTotalRawMaterials(calculateTotalRawMaterials(tree, ownedMaterialsMap));
       } else {
         setTotalRawMaterials(new Map());
       }
@@ -127,9 +134,35 @@ const CraftingTreeViewer: React.FC = () => {
       // Clear tree and materials if no root item is selected
       setCraftingTree(null);
       setTotalRawMaterials(new Map());
-      setDetectedCycles([]); // ✅ Clear cycles
+      setDetectedCycles([]);
     }
-  }, [selectedRootItem, recipes]); // Dependencies for the useEffect hook
+  }, [selectedRootItem, recipes, ownedMaterials]); // Add ownedMaterials to dependencies
+
+  const handleAddOwnedMaterial = useCallback(() => {
+    if (newOwnedMaterialName.trim() && newOwnedMaterialQuantity > 0) {
+      addOwnedMaterial({ itemName: newOwnedMaterialName.trim(), quantity: newOwnedMaterialQuantity });
+      setNewOwnedMaterialName('');
+      setNewOwnedMaterialQuantity(1);
+      toast.success(`Added ${newOwnedMaterialQuantity} x ${newOwnedMaterialName} to owned materials.`);
+    } else {
+      toast.error('Please enter a valid material name and quantity.');
+    }
+  }, [newOwnedMaterialName, newOwnedMaterialQuantity, addOwnedMaterial]);
+
+  const handleUpdateOwnedMaterialQuantity = useCallback((itemName: string, quantity: number) => {
+    if (quantity > 0) {
+      updateOwnedMaterial(itemName, quantity);
+      toast.success(`Updated ${itemName} quantity to ${quantity}.`);
+    } else {
+      removeOwnedMaterial(itemName);
+      toast.success(`Removed ${itemName} from owned materials.`);
+    }
+  }, [updateOwnedMaterial, removeOwnedMaterial]);
+
+  const handleRemoveOwnedMaterial = useCallback((itemName: string) => {
+    removeOwnedMaterial(itemName);
+    toast.success(`Removed ${itemName} from owned materials.`);
+  }, [removeOwnedMaterial]);
 
   return (
     <div className='crafting-tree-viewer-container card'>
@@ -151,6 +184,49 @@ const CraftingTreeViewer: React.FC = () => {
             </option>
           ))}
         </select>
+      </div>
+
+      {/* Section for managing owned materials */}
+      <div className='owned-materials-section card'>
+        <h3>Materials on Hand</h3>
+        <div className='add-material-form'>
+          <input
+            type='text'
+            placeholder='Material Name'
+            value={newOwnedMaterialName}
+            onChange={(e) => setNewOwnedMaterialName(e.target.value)}
+          />
+          <input
+            type='number'
+            placeholder='Quantity'
+            value={newOwnedMaterialQuantity}
+            onChange={(e) => setNewOwnedMaterialQuantity(Number(e.target.value))}
+            min='1'
+          />
+          <button onClick={handleAddOwnedMaterial}>Add Material</button>
+        </div>
+
+        {ownedMaterials.length > 0 && (
+          <ul className='owned-materials-list'>
+            {ownedMaterials.map((material) => (
+              <li key={material.itemName} className='owned-material-item'>
+                <span>{material.itemName} (x{material.quantity})</span>
+                <div className='material-actions'>
+                  <input
+                    type='number'
+                    value={material.quantity}
+                    onChange={(e) => handleUpdateOwnedMaterialQuantity(material.itemName, Number(e.target.value))}
+                    min='0'
+                  />
+                  <button onClick={() => handleRemoveOwnedMaterial(material.itemName)} className='remove-material-btn'>Remove</button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+        {ownedMaterials.length === 0 && (
+          <p>No materials on hand. Add some above!</p>
+        )}
       </div>
 
       {/* Message displayed if no crafting tree is found for the selected item */}
@@ -177,7 +253,6 @@ const CraftingTreeViewer: React.FC = () => {
             {detectedCycles.map((cyclePath, index) => (
               <li key={index}>
                 <code>{cyclePath.join(' &#8594; ')}</code>{' '}
-                {/* Uses HTML entity for arrow */}
               </li>
             ))}
           </ul>
@@ -195,10 +270,10 @@ const CraftingTreeViewer: React.FC = () => {
         </div>
       )}
 
-      {/* Display total raw materials needed if a tree exists and materials are calculated */}
+      {/* Display remaining raw materials needed if a tree exists and materials are calculated */}
       {craftingTree && totalRawMaterials.size > 0 && (
         <div className='total-raw-materials-display'>
-          <h3>Total Raw Materials Needed:</h3>
+          <h3>Remaining Materials Needed:</h3>
           <ul>
             {Array.from(totalRawMaterials.entries()).map(
               ([itemName, quantity]) => (
@@ -209,6 +284,12 @@ const CraftingTreeViewer: React.FC = () => {
             )}
           </ul>
         </div>
+      )}
+
+      {craftingTree && totalRawMaterials.size === 0 && selectedRootItem && (
+        <p className='all-materials-met-message'>
+          You have all the materials needed for {selectedRootItem}!
+        </p>
       )}
 
       {/* Message displayed if no blacksmithing recipes are available */}
