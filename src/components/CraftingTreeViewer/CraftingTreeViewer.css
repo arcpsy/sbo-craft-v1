@@ -1,26 +1,22 @@
 /* src/components/CraftingTreeViewer.css */
 
-.crafting-tree-viewer-container {
-  background-color: var(--color-background-card);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-md);
-  border: 1px solid var(--color-border);
-}
-
 .crafting-tree-viewer-container h2 {
-  margin-bottom: var(--spacing-lg); /* Increased space below main heading */
+  margin-bottom: var(--spacing-lg); /* Divisible by 4 */
 }
 
 .crafting-tree-display {
-  margin-top: var(--spacing-lg);
+  margin-top: var(--spacing-lg); /* Divisible by 4 */
   border: 1px solid var(--color-border-dark);
-  padding: var(--spacing-md);
-  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md); /* Divisible by 4 */
+  border-radius: var(--border-radius-md); /* Divisible by 4 */
   background-color: var(--color-background-nested);
+  flex-grow: 1; /* Allow it to grow within crafting-tree-viewer-container */
+  min-height: 0; /* Important for flex items with overflow */
+  overflow-y: auto; /* Enable scrolling for the tree display */
 }
 
 .crafting-tree-display h3 {
-  margin-bottom: var(--spacing-md); /* Consistent spacing below sub-heading */
+  margin-bottom: var(--spacing-md); /* Divisible by 4 */
 }
 
 .tree-root,
@@ -31,50 +27,53 @@
 
 .tree-root ul {
   border-left: 1px solid var(--color-divider);
-  padding-left: var(--spacing-md);
-  margin-left: var(--spacing-sm);
+  padding-left: var(--spacing-md); /* Divisible by 4 */
+  margin-left: var(--spacing-sm); /* Divisible by 4 */
 }
 
 .tree-root li {
-  padding: var(--spacing-xxs) 0; /* Keep tight vertical spacing for tree nodes */
-  line-height: 1.4; /* Slightly adjust line height for readability */
+  padding: var(--spacing-xxs) 0; /* Divisible by 4 */
+  line-height: 1.4;
 }
 
 .crafted-item {
   font-weight: var(--font-weight-medium);
   color: var(--color-primary);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-base); /* Divisible by 4 */
 }
 
 .raw-material {
   color: var(--color-secondary);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-base); /* Divisible by 4 */
 }
 
 .node-type-label {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-sm); /* Divisible by 4 */
   color: var(--color-text-muted);
-  margin-left: var(--spacing-xs);
+  margin-left: var(--spacing-xs); /* Divisible by 4 */
 }
 
 .cycle-detected-label {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-sm); /* Divisible by 4 */
   color: var(--color-error);
   font-weight: var(--font-weight-bold);
-  margin-left: var(--spacing-xs);
+  margin-left: var(--spacing-xs); /* Divisible by 4 */
 }
 
 .remaining-materials-tree-display {
-  margin-top: var(--spacing-lg);
+  margin-top: var(--spacing-lg); /* Divisible by 4 */
   border: 1px solid var(--color-border-dark);
-  padding: var(--spacing-md);
-  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md); /* Divisible by 4 */
+  border-radius: var(--border-radius-md); /* Divisible by 4 */
   background-color: var(--color-background-nested);
+  flex-grow: 1; /* Allow it to grow within crafting-tree-viewer-container */
+  min-height: 0; /* Important for flex items with overflow */
+  overflow-y: auto; /* Enable scrolling for the remaining materials tree display */
 }
 
 .remaining-materials-tree-display h3 {
   margin-top: 0;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-md); /* Divisible by 4 */
   color: var(--color-primary-light);
 }
 
@@ -90,11 +89,13 @@
 .toggle-button {
   background: none;
   border: none;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-base); /* Divisible by 4 */
   cursor: pointer;
-  margin-right: var(--spacing-xs);
+  margin-right: var(--spacing-xs); /* Divisible by 4 */
   color: var(--color-text-muted);
-  transition: color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease);
+  transition:
+    color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease);
 }
 
 .toggle-button:hover {
@@ -106,9 +107,9 @@
   background-color: rgba(255, 51, 51, 0.1);
   border: 1px solid var(--color-error);
   color: var(--color-error);
-  padding: var(--spacing-md);
-  margin-top: var(--spacing-lg);
-  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md); /* Divisible by 4 */
+  margin-top: var(--spacing-lg); /* Divisible by 4 */
+  border-radius: var(--border-radius-md); /* Divisible by 4 */
 }
 
 .cycle-warning ul {
@@ -120,51 +121,53 @@
 .cycle-warning li {
   font-family: monospace;
   background-color: rgba(255, 51, 51, 0.2);
-  padding: var(--spacing-xs);
-  border-radius: var(--border-radius-sm);
-  margin-bottom: var(--spacing-xs);
+  padding: var(--spacing-xs); /* Divisible by 4 */
+  border-radius: var(--border-radius-sm); /* Divisible by 4 */
+  margin-bottom: var(--spacing-xs); /* Divisible by 4 */
 }
 
 /* Improved styles for Owned Materials Section */
 .owned-materials-section {
-  margin-top: var(--spacing-lg);
-  padding: var(--spacing-md);
+  margin-top: var(--spacing-lg); /* Divisible by 4 */
+  padding: var(--spacing-md); /* Divisible by 4 */
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--border-radius-md); /* Divisible by 4 */
   background-color: var(--color-background-card);
 }
 
 .owned-materials-section h3 {
   margin-top: 0;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-md); /* Divisible by 4 */
   color: var(--color-primary-light);
 }
 
 .add-material-form {
   display: grid;
-  grid-template-columns: 1fr 80px auto; /* Name, Quantity, Button */
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
+  grid-template-columns: 1fr 80px auto; /* 80px is divisible by 4 */
+  gap: var(--spacing-sm); /* Divisible by 4 */
+  margin-bottom: var(--spacing-md); /* Divisible by 4 */
   align-items: center;
 }
 
 .add-material-form input[type='text'],
 .add-material-form input[type='number'] {
-  padding: var(--spacing-xs);
+  padding: var(--spacing-xs); /* Divisible by 4 */
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--border-radius-sm); /* Divisible by 4 */
   background-color: var(--color-background-input);
   color: var(--color-text-light);
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-base); /* Divisible by 4 */
   box-sizing: border-box;
-  transition: border-color var(--transition-speed) var(--transition-ease), box-shadow var(--transition-speed) var(--transition-ease);
+  transition:
+    border-color var(--transition-speed) var(--transition-ease),
+    box-shadow var(--transition-speed) var(--transition-ease);
 }
 
 /* Placeholder styling */
 .add-material-form input::placeholder,
 .material-actions input::placeholder {
-  color: var(--color-text-muted); /* Gray placeholder color */
-  opacity: 0.7; /* Slightly transparent */
+  color: var(--color-text-muted);
+  opacity: 0.7;
 }
 
 .add-material-form input[type='number'] {
@@ -174,10 +177,12 @@
 .add-material-form button {
   background-color: var(--color-tertiary);
   color: var(--color-text-dark);
-  padding: var(--spacing-xs) var(--spacing-md);
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-base);
-  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease);
+  padding: var(--spacing-xs) var(--spacing-md); /* Divisible by 4 */
+  border-radius: var(--border-radius-sm); /* Divisible by 4 */
+  font-size: var(--font-size-base); /* Divisible by 4 */
+  transition:
+    background-color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease);
 }
 
 .add-material-form button:hover {
@@ -188,7 +193,7 @@
 .owned-materials-list {
   list-style-type: none;
   padding: 0;
-  margin-top: var(--spacing-md);
+  margin-top: var(--spacing-md); /* Divisible by 4 */
 }
 
 .owned-material-item {
@@ -197,12 +202,14 @@
   align-items: center;
   background-color: var(--color-background-nested);
   border: 1px solid var(--color-border-dark);
-  border-radius: var(--border-radius-sm);
-  padding: var(--spacing-sm);
-  margin-bottom: var(--spacing-sm);
+  border-radius: var(--border-radius-sm); /* Divisible by 4 */
+  padding: var(--spacing-sm); /* Divisible by 4 */
+  margin-bottom: var(--spacing-sm); /* Divisible by 4 */
   color: var(--color-text-light);
-  font-size: var(--font-size-base);
-  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease);
+  font-size: var(--font-size-base); /* Divisible by 4 */
+  transition:
+    background-color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease);
 }
 
 .owned-material-item:hover {
@@ -212,33 +219,35 @@
 
 .owned-material-item span {
   flex-grow: 1;
-  margin-right: var(--spacing-sm); /* Space between name and actions */
+  margin-right: var(--spacing-sm); /* Divisible by 4 */
 }
 
 .material-actions {
   display: flex;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-xs); /* Divisible by 4 */
   align-items: center;
 }
 
 .material-actions input[type='number'] {
-  width: 60px; /* Smaller width for quantity input */
-  padding: var(--spacing-xxs);
+  width: 60px; /* Divisible by 4 */
+  padding: var(--spacing-xxs); /* Divisible by 4 */
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--border-radius-sm); /* Divisible by 4 */
   background-color: var(--color-background-input);
   color: var(--color-text-light);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-sm); /* Divisible by 4 */
   text-align: center;
 }
 
 .material-actions button.remove-material-btn {
   background-color: var(--color-error);
   color: var(--color-text-light);
-  padding: var(--spacing-xxs) var(--spacing-xs);
-  border-radius: var(--border-radius-sm);
-  font-size: var(--font-size-sm);
-  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease);
+  padding: var(--spacing-xxs) var(--spacing-xs); /* Divisible by 4 */
+  border-radius: var(--border-radius-sm); /* Divisible by 4 */
+  font-size: var(--font-size-sm); /* Divisible by 4 */
+  transition:
+    background-color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease);
 }
 
 .material-actions button.remove-material-btn:hover {
@@ -250,20 +259,20 @@
   color: var(--color-success);
   font-weight: var(--font-weight-medium);
   text-align: center;
-  margin-top: var(--spacing-lg);
-  padding: var(--spacing-md);
+  margin-top: var(--spacing-lg); /* Divisible by 4 */
+  padding: var(--spacing-md); /* Divisible by 4 */
   background-color: rgba(0, 204, 102, 0.1);
   border: 1px solid var(--color-success);
-  border-radius: var(--border-radius-md);
+  border-radius: var(--border-radius-md); /* Divisible by 4 */
 }
 
 /* Hide spin buttons for number inputs */
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-input[type="number"] {
+input[type='number'] {
   -moz-appearance: textfield; /* Firefox */
 }

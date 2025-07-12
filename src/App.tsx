@@ -1,29 +1,29 @@
 import React, { useRef } from 'react';
-import './App.css';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import RecipeForm from './components/RecipeForm/RecipeForm';
 import RecipeList from './components/RecipeList/RecipeList';
 import CraftingTreeViewer from './components/CraftingTreeViewer/CraftingTreeViewer';
-import Header from './components/Header/Header'; // Import the new Header component
+import Sidebar from './components/Sidebar/Sidebar';
 import { useRecipeStore } from './store/useRecipeStore';
-import { useOwnedMaterialsStore } from './store/useOwnedMaterialsStore'; // Import owned materials store
+import { useOwnedMaterialsStore } from './store/useOwnedMaterialsStore';
 import { ItemType } from './types';
-import type { AcquisitionType, Recipe, OwnedMaterial } from './types'; // Import OwnedMaterial type
+import type { AcquisitionType, Recipe, OwnedMaterial } from './types';
 import { Toaster, toast } from 'react-hot-toast';
 
 function App() {
   const { recipes, setRecipes } = useRecipeStore();
-  const { ownedMaterials, setOwnedMaterials } = useOwnedMaterialsStore(); // Get ownedMaterials and setOwnedMaterials
+  const { ownedMaterials, setOwnedMaterials } = useOwnedMaterialsStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
     try {
-      const dataToExport = { recipes, ownedMaterials }; // Include ownedMaterials in export
+      const dataToExport = { recipes, ownedMaterials };
       const jsonString = JSON.stringify(dataToExport, null, 2);
       const blob = new Blob([jsonString], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'sbo_data.json'; // Changed filename to reflect all data
+      a.download = 'sbo_data.json';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -54,7 +54,6 @@ function App() {
         const content = e.target?.result as string;
         const importedData = JSON.parse(content);
 
-        // Validate recipes
         const importedRecipes: Recipe[] = importedData.recipes || [];
         if (!Array.isArray(importedRecipes)) {
           throw new Error('Imported recipes data is not a valid array.');
@@ -89,15 +88,23 @@ function App() {
           );
         }
 
-        // Validate owned materials
-        const importedOwnedMaterials: OwnedMaterial[] = importedData.ownedMaterials || [];
+        const importedOwnedMaterials: OwnedMaterial[] =
+          importedData.ownedMaterials || [];
         if (!Array.isArray(importedOwnedMaterials)) {
-          throw new Error('Imported owned materials data is not a valid array.');
+          throw new Error(
+            'Imported owned materials data is not a valid array.',
+          );
         }
 
-        const isValidOwnedMaterials = importedOwnedMaterials.every((item: any) => {
-          return typeof item.itemName === 'string' && typeof item.quantity === 'number' && item.quantity >= 0;
-        });
+        const isValidOwnedMaterials = importedOwnedMaterials.every(
+          (item: any) => {
+            return (
+              typeof item.itemName === 'string' &&
+              typeof item.quantity === 'number' &&
+              item.quantity >= 0
+            );
+          },
+        );
 
         if (!isValidOwnedMaterials) {
           throw new Error(
@@ -106,8 +113,10 @@ function App() {
         }
 
         setRecipes(importedRecipes);
-        setOwnedMaterials(importedOwnedMaterials); // Set owned materials
-        toast.success(`Successfully imported ${importedRecipes.length} recipes and ${importedOwnedMaterials.length} owned materials!`);
+        setOwnedMaterials(importedOwnedMaterials);
+        toast.success(
+          `Successfully imported ${importedRecipes.length} recipes and ${importedOwnedMaterials.length} owned materials!`,
+        );
       } catch (error: any) {
         console.error('Failed to import data:', error);
         toast.error(
@@ -127,30 +136,30 @@ function App() {
   };
 
   return (
-    <div className='App'>
-      <Toaster position='top-center' reverseOrder={false} />
-      <Header onExportRecipes={handleExport} onImportRecipes={handleImportClick} /> {/* Use the new Header component */}
+    <BrowserRouter>
+      <div className='App'>
+        <Toaster position='top-center' reverseOrder={false} />
+        <Sidebar
+          onExportRecipes={handleExport}
+          onImportRecipes={handleImportClick}
+          fileInputRef={fileInputRef}
+          onImportFileChange={handleImport}
+        />
 
-      {/* Main content area, adjusted for fixed header */}
-      <div className='main-content'>
-        <div className='form-list-row'>
-          <RecipeForm />
-          <RecipeList />
-        </div>
-
-        <div className='viewer-row'>
-          <CraftingTreeViewer />
+        <div className='main-content'>
+          {/* Removed main-content-header */}
+          <Routes>
+            <Route
+              path='/'
+              element={<Navigate to='/add-edit-recipe' replace />}
+            />
+            <Route path='/add-edit-recipe' element={<RecipeForm />} />
+            <Route path='/view-recipes' element={<RecipeList />} />
+            <Route path='/crafting-tree' element={<CraftingTreeViewer />} />
+          </Routes>
         </div>
       </div>
-
-      <input
-        type='file'
-        ref={fileInputRef}
-        onChange={handleImport}
-        style={{ display: 'none' }}
-        accept='.json'
-      />
-    </div>
+    </BrowserRouter>
   );
 }
 

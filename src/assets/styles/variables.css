@@ -40,14 +40,14 @@
   --spacing-xl: 32px;
   --spacing-xxl: 48px;
 
-  /* Font Sizes (Smaller Scale for Readability) */
-  --font-size-xs: 0.75rem; /* 12px */
-  --font-size-sm: 0.8125rem; /* 13px */
-  --font-size-base: 0.9375rem; /* 15px */
-  --font-size-md: 1.0625rem; /* 17px */
-  --font-size-lg: 1.25rem; /* 20px */
-  --font-size-xl: 1.5rem; /* 24px */
-  --font-size-xxl: 2rem; /* 32px */
+  /* Font Sizes (Strictly Divisible by 4px, assuming 16px base) */
+  --font-size-xs: 0.75rem;   /* 12px */
+  --font-size-sm: 0.75rem;   /* 12px - Adjusted from 13px */
+  --font-size-base: 1rem;    /* 16px - Adjusted from 15px */
+  --font-size-md: 1.125rem;  /* 18px - Adjusted from 17px */
+  --font-size-lg: 1.25rem;   /* 20px */
+  --font-size-xl: 1.5rem;    /* 24px */
+  --font-size-xxl: 2rem;     /* 32px */
 
   /* Font Weights */
   --font-weight-regular: 400;

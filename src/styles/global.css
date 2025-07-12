@@ -1,0 +1,119 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  overflow-y: auto;
+  background-color: var(--color-background-app);
+  color: var(--color-text-light);
+  line-height: 1.6;
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    var(--color-border) 1px,
+    transparent 0
+  );
+  background-size: 20px 20px;
+}
+
+#root {
+  display: flex;
+  min-height: 100%;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  color: var(--color-text-light);
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  font-weight: var(--font-weight-bold);
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+  font-size: var(--font-size-xxl);
+}
+
+.card {
+  background-color: var(--color-background-card);
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--box-shadow-sm);
+  padding: var(--spacing-md);
+  border: 1px solid var(--color-border);
+}
+
+.form-group {
+  margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--spacing-xxs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+}
+
+.form-group input[type='text'],
+.form-group input[type='number'],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: var(--spacing-xs);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  box-sizing: border-box;
+  font-size: var(--font-size-base);
+  color: var(--color-text-light);
+  background-color: var(--color-background-input);
+  transition:
+    border-color var(--transition-speed) var(--transition-ease),
+    box-shadow var(--transition-speed) var(--transition-ease);
+}
+
+.form-group input[type='text']:focus,
+.form-group input[type='number']:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(0, 170, 255, 0.3);
+}
+
+button {
+  background-color: var(--color-primary);
+  color: var(--color-text-dark);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  transition:
+    background-color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease);
+}
+
+button:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  background-color: var(--color-border);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  transform: none;
+}

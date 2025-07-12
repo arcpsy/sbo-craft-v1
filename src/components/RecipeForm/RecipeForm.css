@@ -1,11 +1,5 @@
 /* src/components/RecipeForm.css */
 
-.recipe-form-container {
-  padding: var(--spacing-md);
-  height: 520px; /* Increased height for scrollability */
-  overflow-y: auto; /* Enable vertical scrolling */
-}
-
 /* Custom Scrollbar Styles for RecipeForm */
 .recipe-form-container::-webkit-scrollbar {
   width: 8px;
@@ -42,11 +36,18 @@
   border-radius: var(--border-radius-sm);
   background-color: var(--color-background-input);
   color: var(--color-text-light);
-  font-size: var(--font-size-base); /* Using the new smaller base font size */
+  font-size: var(--font-size-base);
   box-sizing: border-box; /* Ensure padding doesn't increase width */
   transition:
     border-color var(--transition-speed) var(--transition-ease),
     box-shadow var(--transition-speed) var(--transition-ease);
+}
+
+/* Placeholder styling */
+.recipe-form-container input::placeholder,
+.recipe-form-container textarea::placeholder {
+  color: var(--color-text-muted); /* Gray placeholder color */
+  opacity: 0.7; /* Slightly transparent */
 }
 
 .recipe-form-container input[type='text']:focus,
@@ -61,7 +62,7 @@
 /* Error message styling */
 .error-message {
   color: var(--color-error);
-  font-size: var(--font-size-sm); /* Using the new smaller sm font size */
+  font-size: var(--font-size-sm);
   margin-top: var(--spacing-xxs);
   display: block; /* Ensures it takes its own line */
   font-weight: var(--font-weight-medium);
@@ -86,9 +87,11 @@
   padding: var(--spacing-sm) var(--spacing-md);
   cursor: pointer;
   color: var(--color-text-muted);
-  font-size: var(--font-size-base); /* Using the new smaller base font size */
+  font-size: var(--font-size-base);
   position: relative;
-  transition: all var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
+  transition:
+    all var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
   border-top-left-radius: var(--border-radius-md);
   border-top-right-radius: var(--border-radius-md);
 }
@@ -140,13 +143,15 @@
   background-color: var(--color-background-nested);
   border: 1px solid var(--color-border-dark);
   border-radius: var(--border-radius-sm);
-  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
+  transition:
+    background-color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease);
 }
 
 .ingredient-item:hover,
 .mob-source-item:hover {
   background-color: var(--color-background-hover);
-  transform: translateY(-1px); /* Subtle lift on hover */
+  transform: translateY(-1px);
 }
 
 .ingredient-item input[type='text'],
@@ -169,16 +174,18 @@
   background-color: var(--color-error);
   color: var(--color-text-light); /* Changed to light for better contrast */
   padding: var(--spacing-xxs) var(--spacing-xs); /* Smaller padding */
-  font-size: var(--font-size-sm); /* Using the new smaller sm font size */
+  font-size: var(--font-size-sm);
   border-radius: var(--border-radius-sm);
   flex-shrink: 0; /* Prevent button from shrinking */
-  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
+  transition:
+    background-color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease);
 }
 
 .ingredient-item button:hover,
 .mob-source-item button:hover {
-  background-color: #cc2222; /* Darker red on hover */
-  transform: translateY(-1px); /* Subtle lift on hover */
+  background-color: #cc2222;
+  transform: translateY(-1px);
 }
 
 /* Add button styling for dynamic lists */
@@ -190,27 +197,32 @@
   margin-top: var(--spacing-md);
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius-md);
-  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
+  font-size: var(--font-size-base);
+  transition:
+    background-color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease);
 }
 
 .acquisition-fields > button:hover {
-  background-color: #8bc34a; /* Darker green on hover */
-  transform: translateY(-1px); /* Subtle lift on hover */
+  background-color: #8bc34a;
+  transform: translateY(-1px);
 }
 
 /* Submit button styling */
 .submit-btn {
   width: auto;
   padding: var(--spacing-md) var(--spacing-lg); /* Larger padding */
-  font-size: var(--font-size-md); /* Using the new smaller md font size */
+  font-size: var(--font-size-md);
   margin-top: var(--spacing-lg);
   font-weight: var(--font-weight-bold);
-  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
+  transition:
+    background-color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease);
 }
 
 .submit-btn:hover {
   background-color: var(--color-primary-dark);
-  transform: translateY(-1px); /* Subtle lift on hover */
+  transform: translateY(-1px);
 }
 
 /* Headings within acquisition fields */
@@ -218,8 +230,8 @@
 .acquisition-fields h4 {
   margin-top: var(--spacing-md);
   margin-bottom: var(--spacing-sm);
-  color: var(--color-primary-light); /* Highlight these headings */
-  font-size: var(--font-size-md); /* Using the new smaller md font size */
+  color: var(--color-primary-light);
+  font-size: var(--font-size-md);
 }
 
 @keyframes fadeIn {
@@ -248,12 +260,14 @@
   color: var(--color-text-light);
   border: 1px solid var(--color-border);
   padding: var(--spacing-md) var(--spacing-lg); /* Match submit button padding */
-  font-size: var(--font-size-md); /* Using the new smaller md font size */
+  font-size: var(--font-size-md); /* Match submit button font size */
   margin-top: var(--spacing-lg);
-  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
+  transition:
+    background-color var(--transition-speed) var(--transition-ease),
+    transform var(--transition-speed) var(--transition-ease);
 }
 
 .cancel-btn:hover {
   background-color: var(--color-background-hover);
-  transform: translateY(-1px); /* Subtle lift on hover */
+  transform: translateY(-1px);
 }
