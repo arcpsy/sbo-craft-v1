@@ -17,14 +17,13 @@ export interface TreeNode {
   quantity: number; // The quantity of this item needed for its direct parent.
   children?: TreeNode[]; // Optional: Array of child nodes (ingredients that are themselves crafted).
   isCrafted: boolean; // True if this item has its own crafting recipe (Blacksmithing).
-  isCyclic?: boolean; // ✅ NEW: Optional flag to mark nodes involved in a cycle
+  isCyclic?: boolean; // Optional flag to mark nodes involved in a cycle
 }
 
 /**
  * Interface for the result of building a crafting tree.
  */
 export interface BuildTreeResult {
-  // ✅ NEW: Interface to return both tree and cycles
   tree: TreeNode | null;
   cycles: string[][]; // Each inner array represents a detected cycle path
 }
@@ -45,27 +44,26 @@ const findRecipeByName = (
 /**
  * Recursively builds the crafting dependency tree for a given root item.
  * @param rootItemName The name of the top-level item for which to build the tree.
- * @param allRecipes The complete flat list of all available recipes.
+ * @param allRecipes The complete flat list of all recipes.
  * @returns The root TreeNode of the crafting tree, or null if the root item is not a crafted recipe.
  */
 export const buildCraftingTree = (
   rootItemName: string,
   allRecipes: Recipe[],
 ): BuildTreeResult => {
-  // ✅ Changed return type
   const rootRecipe = findRecipeByName(rootItemName, allRecipes);
 
-  const detectedCycles: string[][] = []; // ✅ NEW: Array to store detected cycles
+  const detectedCycles: string[][] = [];
 
   if (!rootRecipe || rootRecipe.acquisition.type !== 'blacksmithing') {
     console.warn(
       `Cannot build crafting tree for '${rootItemName}': Not found or not a blacksmithing recipe.`,
     );
-    return { tree: null, cycles: [] }; // ✅ Return new structure
+    return { tree: null, cycles: [] };
   }
 
   // Use a Set to keep track of items currently in the recursion path to detect cycles
-  const recursionPath: string[] = []; // ✅ Changed to array to store full path for cycle reporting
+  const recursionPath: string[] = [];
 
   /**
    * Recursive helper function to build a single node and its children.
@@ -92,7 +90,7 @@ export const buildCraftingTree = (
         itemName: currentItemName,
         quantity: requiredQuantity,
         isCrafted: true,
-        isCyclic: true, // ✅ Mark as cyclic
+        isCyclic: true, // Mark as cyclic
         children: [
           {
             itemName: 'CYCLE DETECTED!',
@@ -121,67 +119,114 @@ export const buildCraftingTree = (
       );
     }
 
-    recursionPath.pop(); // ✅ Remove from path when done with this branch
+    recursionPath.pop(); // Remove from path when done with this branch
 
     return node;
   };
 
   // Start building the tree from the root recipe
   const tree = buildNode(rootRecipe.itemName, 1);
-  return { tree, cycles: detectedCycles }; // ✅ Return both tree and cycles
+  return { tree, cycles: detectedCycles };
 };
 
 /**
- * Calculates the total quantities of all raw (non-crafted) materials needed for a given crafting tree,
- * optionally accounting for materials the user already possesses.
+ * Calculates the total quantities of all raw (non-crafted) materials needed for a given crafting tree.
+ * This function does NOT account for owned materials and is primarily for showing the *total* raw materials.
  * @param treeNode The root TreeNode of the crafting tree.
- * @param ownedMaterials Optional: A Map of materials the user already owns (itemName -> quantity).
  * @returns A Map where keys are raw material names (string) and values are their total required quantities (number).
  */
-export const calculateTotalRawMaterials = (
+export const calculateRawMaterialsTotals = (
   treeNode: TreeNode,
-  ownedMaterials: Map<string, number> = new Map(), // Added optional ownedMaterials parameter
 ): Map<string, number> => {
   const totals = new Map<string, number>();
 
-  /**
-   * Recursive helper to traverse the tree and accumulate raw material quantities.
-   * @param node The current node being processed.
-   * @param multiplier The cumulative multiplier from parent nodes (e.g., if a sword needs 3 bars, and a bar needs 2 ore,
-   * the ore's quantity for the sword is 2 * 3 = 6).
-   */
   const traverse = (node: TreeNode, multiplier: number) => {
-    // Skip cycle detected nodes from raw material calculations to avoid unintended sums
     if (node.itemName === 'CYCLE DETECTED!') {
       return;
     }
 
-    // Calculate the actual quantity needed at this level based on previous multipliers
-    let actualQuantity = node.quantity * multiplier;
+    const actualQuantity = node.quantity * multiplier;
 
-    // If it's a raw material (not crafted)
     if (!node.isCrafted) {
-      // Subtract owned materials from the required quantity
-      const owned = ownedMaterials.get(node.itemName) || 0;
-      actualQuantity = Math.max(0, actualQuantity - owned);
-
-      if (actualQuantity > 0) {
-        // Add or update its total quantity only if still needed
-        totals.set(
-          node.itemName,
-          (totals.get(node.itemName) || 0) + actualQuantity,
-        );
-      }
+      totals.set(
+        node.itemName,
+        (totals.get(node.itemName) || 0) + actualQuantity,
+      );
     } else if (node.children) {
-      // If it's a crafted item, recurse into its children
       for (const child of node.children) {
-        traverse(child, actualQuantity); // Pass the current node's actual quantity as the new multiplier
+        traverse(child, actualQuantity);
       }
     }
   };
 
-  // Start the traversal from the root node with a multiplier of 1 (for the root item itself)
   traverse(treeNode, 1);
-
   return totals;
+};
+
+/**
+ * Recursively calculates the remaining materials needed for a given crafting tree,
+ * accounting for materials the user already possesses.
+ * Returns a new TreeNode structure representing only the items (raw or crafted)
+ * that are still needed, with their adjusted quantities.
+ *
+ * @param node The current node from the original crafting tree.
+ * @param ownedMaterials A Map of materials the user already owns (itemName -> quantity).
+ * @param multiplier The cumulative multiplier from parent nodes.
+ * @returns A new TreeNode representing the remaining needed item, or null if not needed.
+ */
+export const calculateRemainingMaterialsTree = (
+  node: TreeNode,
+  ownedMaterials: Map<string, number>,
+  multiplier: number,
+): TreeNode | null => {
+  if (node.itemName === 'CYCLE DETECTED!') {
+    return null; // Don't include cyclic nodes in remaining materials
+  }
+
+  const totalRequired = node.quantity * multiplier;
+  let remainingQuantity = totalRequired;
+
+  if (!node.isCrafted) {
+    // If it's a raw material, subtract owned quantity
+    const owned = ownedMaterials.get(node.itemName) || 0;
+    remainingQuantity = Math.max(0, totalRequired - owned);
+  }
+
+  // If this item (raw or crafted) is still needed
+  if (remainingQuantity > 0) {
+    const remainingNode: TreeNode = {
+      itemName: node.itemName,
+      quantity: remainingQuantity,
+      isCrafted: node.isCrafted,
+      isCyclic: node.isCyclic, // Preserve cyclic flag
+    };
+
+    if (node.isCrafted && node.children) {
+      // For crafted items, recursively calculate remaining children
+      const remainingChildren: TreeNode[] = [];
+      let allChildrenMet = true; // Flag to check if all children are met
+
+      for (const child of node.children) {
+        const childRemaining = calculateRemainingMaterialsTree(
+          child,
+          ownedMaterials,
+          totalRequired, // Pass totalRequired as multiplier for children
+        );
+        if (childRemaining) {
+          remainingChildren.push(childRemaining);
+          allChildrenMet = false; // At least one child is not met
+        }
+      }
+
+      if (remainingChildren.length > 0) {
+        remainingNode.children = remainingChildren;
+      } else if (allChildrenMet) {
+        // If all children are met, then this crafted item is also met
+        return null; // This crafted item is fully covered by owned materials/sub-components
+      }
+    }
+    return remainingNode;
+  }
+
+  return null; // This item is not needed
 };

@@ -2,15 +2,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import './CraftingTreeViewer.css';
 import { useRecipeStore } from '../../store/useRecipeStore';
-import { useOwnedMaterialsStore } from '../../store/useOwnedMaterialsStore'; // Import the new store
+import { useOwnedMaterialsStore } from '../../store/useOwnedMaterialsStore';
 import {
   buildCraftingTree,
-  calculateTotalRawMaterials,
+  calculateRemainingMaterialsTree,
   type TreeNode,
   // @ts-ignore
   type BuildTreeResult,
 } from '../../utils/craftingTreeUtils';
-import type { Recipe, BlacksmithingAcquisition, OwnedMaterial } from '../../types'; // Import OwnedMaterial
+import type {
+  Recipe,
+  BlacksmithingAcquisition,
+  OwnedMaterial,
+} from '../../types';
 import { toast } from 'react-hot-toast';
 
 /**
@@ -64,10 +68,9 @@ const TreeNodeComponent: React.FC<TreeNodeProps> = ({ node, depth }) => {
           <span className='node-type-label'> [Raw Material]</span>
         )}
         {/* Display cycle detection warning if a cycle is detected at this node */}
-        {node.isCyclic &&
-          node.itemName !== 'CYCLE DETECTED!' && (
-            <span className='cycle-detected-label'> [Cyclic Dependency!]</span>
-          )}
+        {node.isCyclic && node.itemName !== 'CYCLE DETECTED!' && (
+          <span className='cycle-detected-label'> [Cyclic Dependency!]</span>
+        )}
       </div>
 
       {/* Recursively render child nodes if expanded and children exist */}
@@ -93,29 +96,34 @@ const TreeNodeComponent: React.FC<TreeNodeProps> = ({ node, depth }) => {
 const CraftingTreeViewer: React.FC = () => {
   // Access recipes from the Zustand store
   const recipes = useRecipeStore((state) => state.recipes);
-  const { ownedMaterials, addOwnedMaterial, updateOwnedMaterial, removeOwnedMaterial } = useOwnedMaterialsStore(); // Access owned materials store
+  const {
+    ownedMaterials,
+    addOwnedMaterial,
+    updateOwnedMaterial,
+    removeOwnedMaterial,
+  } = useOwnedMaterialsStore(); // Access owned materials store
 
   // State for the currently selected root item for the crafting tree
   const [selectedRootItem, setSelectedRootItem] = useState<string>('');
   // State to store the generated crafting tree (root TreeNode)
   const [craftingTree, setCraftingTree] = useState<TreeNode | null>(null);
-  // State to store the calculated total raw materials needed for the selected item
-  const [totalRawMaterials, setTotalRawMaterials] = useState<
-    Map<string, number>
-  >(new Map());
+  // State to store the calculated remaining materials tree
+  const [remainingMaterialsTree, setRemainingMaterialsTree] =
+    useState<TreeNode | null>(null); // Changed from totalRawMaterials
   // State to store any detected cyclic dependencies in the crafting tree
   const [detectedCycles, setDetectedCycles] = useState<string[][]>([]);
 
   // State for adding new owned materials
   const [newOwnedMaterialName, setNewOwnedMaterialName] = useState<string>('');
-  const [newOwnedMaterialQuantity, setNewOwnedMaterialQuantity] = useState<number>(1);
+  const [newOwnedMaterialQuantity, setNewOwnedMaterialQuantity] =
+    useState<number>(1);
 
   // Filter recipes to get only blacksmithing recipes, as only these can form a crafting tree
   const blacksmithingRecipes = recipes.filter(
     (recipe) => recipe.acquisition.type === 'blacksmithing',
   ) as (Recipe & { acquisition: BlacksmithingAcquisition })[];
 
-  // Effect hook to build the crafting tree and calculate raw materials whenever selectedRootItem or recipes change
+  // Effect hook to build the crafting tree and calculate remaining materials whenever selectedRootItem, recipes, or ownedMaterials change
   useEffect(() => {
     if (selectedRootItem) {
       // Build the crafting tree and detect cycles
@@ -123,46 +131,72 @@ const CraftingTreeViewer: React.FC = () => {
       setCraftingTree(tree);
       setDetectedCycles(cycles);
 
-      // Calculate total raw materials if a tree was successfully built, accounting for owned materials
+      // Calculate remaining materials if a tree was successfully built, accounting for owned materials
       if (tree) {
-        const ownedMaterialsMap = new Map(ownedMaterials.map(m => [m.itemName, m.quantity]));
-        setTotalRawMaterials(calculateTotalRawMaterials(tree, ownedMaterialsMap));
+        const ownedMaterialsMap = new Map(
+          ownedMaterials.map((m) => [m.itemName, m.quantity]),
+        );
+        const calculatedRemainingTree = calculateRemainingMaterialsTree(
+          tree,
+          ownedMaterialsMap,
+          1,
+        );
+        setRemainingMaterialsTree(calculatedRemainingTree);
+        console.log(
+          'Calculated Remaining Materials Tree:',
+          JSON.stringify(calculatedRemainingTree, null, 2),
+        ); // Debugging log
       } else {
-        setTotalRawMaterials(new Map());
+        setRemainingMaterialsTree(null);
       }
     } else {
       // Clear tree and materials if no root item is selected
       setCraftingTree(null);
-      setTotalRawMaterials(new Map());
+      setRemainingMaterialsTree(null);
       setDetectedCycles([]);
     }
   }, [selectedRootItem, recipes, ownedMaterials]); // Add ownedMaterials to dependencies
 
   const handleAddOwnedMaterial = useCallback(() => {
     if (newOwnedMaterialName.trim() && newOwnedMaterialQuantity > 0) {
-      addOwnedMaterial({ itemName: newOwnedMaterialName.trim(), quantity: newOwnedMaterialQuantity });
+      addOwnedMaterial({
+        itemName: newOwnedMaterialName.trim(),
+        quantity: newOwnedMaterialQuantity,
+      });
       setNewOwnedMaterialName('');
       setNewOwnedMaterialQuantity(1);
-      toast.success(`Added ${newOwnedMaterialQuantity} x ${newOwnedMaterialName} to owned materials.`);
+      toast.success(
+        `Added ${newOwnedMaterialQuantity} x ${newOwnedMaterialName} to owned materials.`,
+      );
     } else {
       toast.error('Please enter a valid material name and quantity.');
     }
   }, [newOwnedMaterialName, newOwnedMaterialQuantity, addOwnedMaterial]);
 
-  const handleUpdateOwnedMaterialQuantity = useCallback((itemName: string, quantity: number) => {
-    if (quantity > 0) {
-      updateOwnedMaterial(itemName, quantity);
-      toast.success(`Updated ${itemName} quantity to ${quantity}.`);
-    } else {
+  const handleUpdateOwnedMaterialQuantity = useCallback(
+    (itemName: string, value: string) => {
+      const parsedQuantity = parseInt(value, 10);
+      if (isNaN(parsedQuantity) || value.trim() === '') {
+        // If input is empty or not a number, don't remove, just update to 0 for display
+        updateOwnedMaterial(itemName, 0); // Temporarily set to 0 for display
+      } else if (parsedQuantity > 0) {
+        updateOwnedMaterial(itemName, parsedQuantity);
+        toast.success(`Updated ${itemName} quantity to ${parsedQuantity}.`);
+      } else if (parsedQuantity === 0) {
+        removeOwnedMaterial(itemName);
+        toast.success(`Removed ${itemName} from owned materials.`);
+      }
+    },
+    [updateOwnedMaterial, removeOwnedMaterial],
+  );
+
+  const handleRemoveOwnedMaterial = useCallback(
+    (itemName: string) => {
       removeOwnedMaterial(itemName);
       toast.success(`Removed ${itemName} from owned materials.`);
-    }
-  }, [updateOwnedMaterial, removeOwnedMaterial]);
-
-  const handleRemoveOwnedMaterial = useCallback((itemName: string) => {
-    removeOwnedMaterial(itemName);
-    toast.success(`Removed ${itemName} from owned materials.`);
-  }, [removeOwnedMaterial]);
+    },
+    [removeOwnedMaterial],
+  );
 
   return (
     <div className='crafting-tree-viewer-container card'>
@@ -200,7 +234,9 @@ const CraftingTreeViewer: React.FC = () => {
             type='number'
             placeholder='Quantity'
             value={newOwnedMaterialQuantity}
-            onChange={(e) => setNewOwnedMaterialQuantity(Number(e.target.value))}
+            onChange={(e) =>
+              setNewOwnedMaterialQuantity(Number(e.target.value))
+            }
             min='1'
           />
           <button onClick={handleAddOwnedMaterial}>Add Material</button>
@@ -210,15 +246,27 @@ const CraftingTreeViewer: React.FC = () => {
           <ul className='owned-materials-list'>
             {ownedMaterials.map((material) => (
               <li key={material.itemName} className='owned-material-item'>
-                <span>{material.itemName} (x{material.quantity})</span>
+                <span>
+                  {material.itemName} (x{material.quantity})
+                </span>
                 <div className='material-actions'>
                   <input
                     type='number'
-                    value={material.quantity}
-                    onChange={(e) => handleUpdateOwnedMaterialQuantity(material.itemName, Number(e.target.value))}
+                    value={material.quantity === 0 ? '' : material.quantity} /* Display empty string for 0 to allow backspacing */
+                    onChange={(e) =>
+                      handleUpdateOwnedMaterialQuantity(
+                        material.itemName,
+                        e.target.value,
+                      )
+                    }
                     min='0'
                   />
-                  <button onClick={() => handleRemoveOwnedMaterial(material.itemName)} className='remove-material-btn'>Remove</button>
+                  <button
+                    onClick={() => handleRemoveOwnedMaterial(material.itemName)}
+                    className='remove-material-btn'
+                  >
+                    Remove
+                  </button>
                 </div>
               </li>
             ))}
@@ -260,33 +308,18 @@ const CraftingTreeViewer: React.FC = () => {
         </div>
       )}
 
-      {/* Display the crafting tree if it exists */}
-      {craftingTree && (
-        <div className='crafting-tree-display'>
-          <h3>Tree for: {craftingTree.itemName}</h3>
-          <ul className='tree-root'>
-            <TreeNodeComponent node={craftingTree} depth={0} />
-          </ul>
-        </div>
-      )}
-
-      {/* Display remaining raw materials needed if a tree exists and materials are calculated */}
-      {craftingTree && totalRawMaterials.size > 0 && (
-        <div className='total-raw-materials-display'>
+      {/* Display remaining materials needed tree */}
+      {remainingMaterialsTree && (
+        <div className='remaining-materials-tree-display card'>
           <h3>Remaining Materials Needed:</h3>
-          <ul>
-            {Array.from(totalRawMaterials.entries()).map(
-              ([itemName, quantity]) => (
-                <li key={itemName}>
-                  <strong>{itemName}</strong>: {quantity}
-                </li>
-              ),
-            )}
+          <ul className='tree-root'>
+            <TreeNodeComponent node={remainingMaterialsTree} depth={0} />
           </ul>
         </div>
       )}
 
-      {craftingTree && totalRawMaterials.size === 0 && selectedRootItem && (
+      {/* Message when all materials are met */}
+      {craftingTree && !remainingMaterialsTree && selectedRootItem && (
         <p className='all-materials-met-message'>
           You have all the materials needed for {selectedRootItem}!
         </p>

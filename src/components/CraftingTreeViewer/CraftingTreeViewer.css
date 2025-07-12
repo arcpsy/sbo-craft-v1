@@ -55,12 +55,22 @@
   margin-left: var(--spacing-xs);
 }
 
-.total-raw-materials-display {
+.remaining-materials-tree-display {
   margin-top: var(--spacing-lg);
+  border: 1px solid var(--color-border-dark); /* Changed from red debugging border */
   padding: var(--spacing-md);
-  border: 1px dashed var(--color-primary);
   border-radius: var(--border-radius-md);
   background-color: var(--color-background-nested);
+}
+
+.remaining-materials-tree-display h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-primary-light);
+}
+
+.remaining-materials-tree-display .tree-root {
+  /* Inherits base tree-root styles */
 }
 
 .node-header {
@@ -122,20 +132,34 @@
 }
 
 .add-material-form {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 80px auto; /* Name, Quantity, Button */
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
+  align-items: center;
 }
 
 .add-material-form input[type='text'],
 .add-material-form input[type='number'] {
-  flex-grow: 1;
   padding: var(--spacing-xs);
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-sm);
   background-color: var(--color-background-input);
   color: var(--color-text-light);
   font-size: var(--font-size-base);
+  box-sizing: border-box;
+  transition: border-color var(--transition-speed) var(--transition-ease), box-shadow var(--transition-speed) var(--transition-ease);
+}
+
+/* Placeholder styling */
+.add-material-form input::placeholder,
+.material-actions input::placeholder {
+  color: var(--color-text-muted); /* Gray placeholder color */
+  opacity: 0.7; /* Slightly transparent */
+}
+
+.add-material-form input[type='number'] {
+  text-align: center;
 }
 
 .add-material-form button {
@@ -169,10 +193,17 @@
   margin-bottom: var(--spacing-sm);
   color: var(--color-text-light);
   font-size: var(--font-size-base);
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease);
+}
+
+.owned-material-item:hover {
+  background-color: var(--color-background-hover);
+  transform: translateY(-1px);
 }
 
 .owned-material-item span {
   flex-grow: 1;
+  margin-right: var(--spacing-sm); /* Space between name and actions */
 }
 
 .material-actions {
@@ -215,4 +246,15 @@
   background-color: rgba(0, 204, 102, 0.1);
   border: 1px solid var(--color-success);
   border-radius: var(--border-radius-md);
+}
+
+/* Hide spin buttons for number inputs */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
 }
