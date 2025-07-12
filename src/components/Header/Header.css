@@ -45,9 +45,10 @@
   cursor: pointer;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
-  transition: background-color var(--transition-speed) var(--transition-ease);
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
 }
 
 .header-button:hover {
   background-color: var(--color-primary-dark); /* Using primary-dark for hover state */
+  transform: translateY(-1px); /* Subtle lift on hover */
 }

@@ -73,11 +73,12 @@
   cursor: pointer;
   margin-right: var(--spacing-xs);
   color: var(--color-text-muted);
-  transition: color var(--transition-speed) var(--transition-ease);
+  transition: color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
 }
 
 .toggle-button:hover {
   color: var(--color-primary);
+  transform: translateY(-1px); /* Subtle lift on hover */
 }
 
 .cycle-warning {

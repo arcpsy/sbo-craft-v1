@@ -14,12 +14,13 @@
 body {
   font-family: 'Inter', sans-serif;
   margin: 0;
-  padding: var(--spacing-md); /* Adjusted from --spacing-lg */
+  padding: var(--spacing-md);
   background-color: var(--color-background-app);
   color: var(--color-text-light);
   line-height: 1.6;
-  background-image: radial-gradient(var(--color-border) 1px, transparent 0);
-  background-size: 40px 40px;
+  /* Refined background pattern for a more subtle and modern look */
+  background-image: radial-gradient(circle at 1px 1px, var(--color-border) 1px, transparent 0);
+  background-size: 20px 20px; /* Adjusted for a finer pattern */
 }
 
 #root {
@@ -30,14 +31,14 @@ body {
 .App {
   max-width: 1200px;
   width: 100%;
-  padding: 0 var(--spacing-lg) var(--spacing-lg) var(--spacing-lg); /* Adjusted padding */
+  padding: 0 var(--spacing-lg) var(--spacing-lg) var(--spacing-lg);
   background-color: transparent;
   border-radius: var(--border-radius-lg);
   box-shadow: none;
 }
 
 .main-content {
-  padding-top: 80px; /* Header height (60px) + some extra spacing (20px) */
+  padding-top: 80px;
 }
 
 h1,
@@ -58,9 +59,9 @@ h1 {
 
 .card {
   background-color: var(--color-background-card);
-  border-radius: var(--border-radius-md); /* Adjusted from --border-radius-lg */
-  box-shadow: var(--box-shadow-sm); /* Adjusted from --box-shadow-md */
-  padding: var(--spacing-md); /* Adjusted from --spacing-lg */
+  border-radius: var(--border-radius-md);
+  box-shadow: var(--box-shadow-sm); /* Keep subtle shadow */
+  padding: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
   border: 1px solid var(--color-border);
 }
@@ -71,7 +72,7 @@ h1 {
 
 .form-group label {
   display: block;
-  margin-bottom: var(--spacing-xxs); /* Adjusted from --spacing-xs */
+  margin-bottom: var(--spacing-xxs);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-muted);
 }
@@ -81,14 +82,15 @@ h1 {
 .form-group select,
 .form-group textarea {
   width: 100%;
-  padding: var(--spacing-xs); /* Adjusted from --spacing-sm */
+  padding: var(--spacing-xs);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-sm); /* Adjusted from --border-radius-md */
+  border-radius: var(--border-radius-sm);
   box-sizing: border-box;
   font-size: var(--font-size-base);
   color: var(--color-text-light);
   background-color: var(--color-background-input);
-  transition: border-color var(--transition-speed) var(--transition-ease);
+  /* Enhanced transition for a smoother feel */
+  transition: border-color var(--transition-speed) var(--transition-ease), box-shadow var(--transition-speed) var(--transition-ease);
 }
 
 .form-group input[type='text']:focus,
@@ -97,28 +99,32 @@ h1 {
 .form-group textarea:focus {
   outline: none;
   border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(0, 170, 255, 0.3); /* Subtle focus glow */
 }
 
 button {
   background-color: var(--color-primary);
   color: var(--color-text-dark);
-  padding: var(--spacing-xs) var(--spacing-md); /* Adjusted padding */
+  padding: var(--spacing-xs) var(--spacing-md);
   border: none;
-  border-radius: var(--border-radius-sm); /* Adjusted from --border-radius-md */
+  border-radius: var(--border-radius-sm);
   cursor: pointer;
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-medium);
-  transition: background-color var(--transition-speed) var(--transition-ease);
+  /* Enhanced transition and subtle lift on hover */
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease);
 }
 
 button:hover {
   background-color: var(--color-primary-dark);
+  transform: translateY(-1px); /* Subtle lift on hover */
 }
 
 button:disabled {
   background-color: var(--color-border);
   color: var(--color-text-muted);
   cursor: not-allowed;
+  transform: none; /* No lift when disabled */
 }
 
 .form-list-row {

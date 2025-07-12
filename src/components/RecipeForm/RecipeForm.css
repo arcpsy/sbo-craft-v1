@@ -88,7 +88,7 @@
   color: var(--color-text-muted);
   font-size: var(--font-size-base);
   position: relative;
-  transition: all var(--transition-speed) var(--transition-ease);
+  transition: all var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
   border-top-left-radius: var(--border-radius-md);
   border-top-right-radius: var(--border-radius-md);
 }
@@ -96,6 +96,7 @@
 .tabs button:hover:not(.active) {
   color: var(--color-text-light);
   background-color: var(--color-background-hover);
+  transform: translateY(-1px); /* Subtle lift on hover */
 }
 
 .tabs button.active {
@@ -139,6 +140,13 @@
   background-color: var(--color-background-nested);
   border: 1px solid var(--color-border-dark);
   border-radius: var(--border-radius-sm);
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
+}
+
+.ingredient-item:hover,
+.mob-source-item:hover {
+  background-color: var(--color-background-hover);
+  transform: translateY(-1px); /* Subtle lift on hover */
 }
 
 .ingredient-item input[type='text'],
@@ -164,11 +172,13 @@
   font-size: var(--font-size-sm);
   border-radius: var(--border-radius-sm);
   flex-shrink: 0; /* Prevent button from shrinking */
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
 }
 
 .ingredient-item button:hover,
 .mob-source-item button:hover {
   background-color: #cc2222; /* Darker red on hover */
+  transform: translateY(-1px); /* Subtle lift on hover */
 }
 
 /* Add button styling for dynamic lists */
@@ -180,10 +190,12 @@
   margin-top: var(--spacing-md);
   padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--border-radius-md);
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
 }
 
 .acquisition-fields > button:hover {
   background-color: #8bc34a; /* Darker green on hover */
+  transform: translateY(-1px); /* Subtle lift on hover */
 }
 
 /* Submit button styling */
@@ -193,6 +205,12 @@
   font-size: var(--font-size-md);
   margin-top: var(--spacing-lg);
   font-weight: var(--font-weight-bold);
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
+}
+
+.submit-btn:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px); /* Subtle lift on hover */
 }
 
 /* Headings within acquisition fields */
@@ -231,8 +249,10 @@
   padding: var(--spacing-md) var(--spacing-lg); /* Match submit button padding */
   font-size: var(--font-size-md); /* Match submit button font size */
   margin-top: var(--spacing-lg);
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
 }
 
 .cancel-btn:hover {
   background-color: var(--color-background-hover);
+  transform: translateY(-1px); /* Subtle lift on hover */
 }

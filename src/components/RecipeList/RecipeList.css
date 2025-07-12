@@ -7,7 +7,7 @@
   border: 1px solid var(--color-border);
   display: flex;
   flex-direction: column; /* Make container a flex column */
-  height: 520px; /* Increased height for the entire card */
+  height: 520px; /* Fixed height for the entire card */
   /* Removed overflow-y: auto from here, as the list itself will scroll */
 }
 
@@ -45,12 +45,13 @@
   border: 1px solid var(--color-border-dark);
   border-radius: var(--border-radius-sm); /* Adjusted from md */
   margin-bottom: var(--spacing-sm); /* Adjusted from md */
-  transition: background-color var(--transition-speed) var(--transition-ease);
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
   overflow: hidden; /* Hide overflowing content when collapsed */
 }
 
 .recipe-item:hover {
   background-color: var(--color-background-hover);
+  transform: translateY(-1px); /* Subtle lift on hover */
 }
 
 .recipe-header {
@@ -136,6 +137,12 @@
 .recipe-actions button {
   padding: var(--spacing-xs) var(--spacing-sm);
   font-size: var(--font-size-sm);
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
+}
+
+.recipe-actions button:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px); /* Subtle lift on hover */
 }
 
 .delete-selected-btn {
@@ -163,7 +170,7 @@
   font-size: var(--font-size-base);
   color: var(--color-text-light);
   background-color: var(--color-background-input);
-  transition: border-color var(--transition-speed) var(--transition-ease);
+  transition: border-color var(--transition-speed) var(--transition-ease), box-shadow var(--transition-speed) var(--transition-ease);
 }
 
 .search-input-wrapper input[type='text']:focus,
@@ -197,10 +204,12 @@
   cursor: pointer;
   font-size: var(--font-size-base);
   padding: 0;
+  transition: color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
 }
 
 .clear-search-btn:hover {
   color: var(--color-text-light);
+  transform: translateY(-1px); /* Subtle lift on hover */
 }
 
 .filter-dropdown {
@@ -228,10 +237,12 @@
   padding: var(--spacing-xs) var(--spacing-sm);
   border-radius: var(--border-radius-sm);
   margin-left: var(--spacing-sm);
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
 }
 
 .toast-confirm-btn:hover {
   background-color: var(--color-primary-dark);
+  transform: translateY(-1px); /* Subtle lift on hover */
 }
 
 .toast-cancel-btn {
@@ -241,10 +252,12 @@
   border: 1px solid var(--color-border);
   border-radius: var(--border-radius-sm);
   margin-left: var(--spacing-sm);
+  transition: background-color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
 }
 
 .toast-cancel-btn:hover {
   background-color: var(--color-background-hover);
+  transform: translateY(-1px); /* Subtle lift on hover */
 }
 
 .select-all-container {
