@@ -20,6 +20,13 @@ import { toast } from 'react-hot-toast';
 interface RecipeFormProps {}
 
 /**
+ * Represents a single ingredient for form handling, allowing quantity to be a string.
+ */
+interface FormIngredient extends Omit<Ingredient, 'quantity'> {
+  quantity: number | string;
+}
+
+/**
  * Defines the shape of the form data state within the RecipeForm component.
  * This mirrors the `Recipe` type but flattens acquisition-specific fields
  * to manage them uniformly in the form. This allows for a single state object
@@ -29,12 +36,12 @@ interface RecipeFormState {
   itemName: string;
   itemType: ItemTypeType;
   acquisitionType: AcquisitionType;
-  ingredients: Ingredient[];
+  ingredients: FormIngredient[]; // Use FormIngredient
   smithingSkillRequired?: number;
   mobSources: {
     mobName: string;
     mobType: 'Boss' | 'Miniboss' | 'Minion';
-    floor: number;
+    floor: number | string; // Allow string for input field
   }[];
   itemWorthCol?: number;
   merchantFloor?: number;
@@ -120,7 +127,13 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
         // Type assertions are used here to safely access properties specific to each acquisition type.
         ingredients:
           recipeToEdit.acquisition.type === 'blacksmithing'
-            ? (recipeToEdit.acquisition as BlacksmithingAcquisition).ingredients
+            ? (
+                recipeToEdit.acquisition as BlacksmithingAcquisition
+              ).ingredients.map((ing) => ({
+                // Map to ensure quantity is string for input
+                ...ing,
+                quantity: ing.quantity.toString(),
+              }))
             : [],
         smithingSkillRequired:
           recipeToEdit.acquisition.type === 'blacksmithing'
@@ -129,7 +142,13 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
             : undefined,
         mobSources:
           recipeToEdit.acquisition.type === 'mob-drop'
-            ? (recipeToEdit.acquisition as MobDropAcquisition).mobSources
+            ? (recipeToEdit.acquisition as MobDropAcquisition).mobSources.map(
+                (source) => ({
+                  // Map to ensure floor is string for input
+                  ...source,
+                  floor: source.floor.toString(),
+                }),
+              )
             : [],
         itemWorthCol:
           recipeToEdit.acquisition.type === 'merchant'
@@ -222,7 +241,11 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
     (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
       const newIngredients = [...formData.ingredients];
-      newIngredients[index] = { ...newIngredients[index], [name]: value };
+      newIngredients[index] = {
+        ...newIngredients[index],
+        [name]:
+          name === 'quantity' ? (value === '' ? '' : Number(value)) : value, // Handle quantity as string for input
+      };
 
       setFormData((prevData) => ({
         ...prevData,
@@ -240,7 +263,7 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
   const handleAddIngredient = useCallback(() => {
     setFormData((prevData) => ({
       ...prevData,
-      ingredients: [...prevData.ingredients, { name: '', quantity: 1 }],
+      ingredients: [...prevData.ingredients, { name: '', quantity: '' }], // Initialize quantity as empty string
     }));
   }, []); // No dependencies, so this function is memoized once.
 
@@ -274,7 +297,7 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
       const newMobSources = [...formData.mobSources];
       newMobSources[index] = {
         ...newMobSources[index],
-        [name]: name === 'floor' ? Number(value) : value, // Convert floor to number
+        [name]: name === 'floor' ? (value === '' ? '' : Number(value)) : value, // Handle floor as string for input
       };
 
       setFormData((prevData) => ({
@@ -295,7 +318,7 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
       ...prevData,
       mobSources: [
         ...prevData.mobSources,
-        { mobName: '', mobType: 'Minion', floor: 1 },
+        { mobName: '', mobType: 'Minion', floor: '' }, // Initialize floor as empty string
       ],
     }));
   }, []); // No dependencies, so this function is memoized once.
@@ -349,20 +372,18 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
           isValid = false;
         }
         for (const ingredient of formData.ingredients) {
-          if (!ingredient.name.trim() || ingredient.quantity <= 0) {
+          // Validate quantity: must be a number and greater than 0
+          const quantityValue = Number(ingredient.quantity);
+          if (
+            !ingredient.name.trim() ||
+            isNaN(quantityValue) ||
+            quantityValue <= 0
+          ) {
             newErrors.ingredients =
               'All ingredients must have a name and a quantity greater than 0.';
             isValid = false;
             break;
           }
-        }
-        if (
-          formData.smithingSkillRequired !== undefined &&
-          formData.smithingSkillRequired < 0
-        ) {
-          newErrors.smithingSkillRequired =
-            'Smithing skill cannot be negative.';
-          isValid = false;
         }
         break;
       case 'mob-drop':
@@ -371,7 +392,9 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
           isValid = false;
         }
         for (const source of formData.mobSources) {
-          if (!source.mobName.trim() || source.floor <= 0) {
+          // Validate floor: must be a number and greater than 0
+          const floorValue = Number(source.floor);
+          if (!source.mobName.trim() || isNaN(floorValue) || floorValue <= 0) {
             newErrors.mobSources =
               'All mob sources must have a name and a floor greater than 0.';
             isValid = false;
@@ -443,14 +466,22 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
         case 'blacksmithing':
           acquisition = {
             type: 'blacksmithing',
-            ingredients: formData.ingredients,
+            ingredients: formData.ingredients.map((ing) => ({
+              // Convert quantity back to number for storage
+              ...ing,
+              quantity: Number(ing.quantity),
+            })),
             smithingSkillRequired: formData.smithingSkillRequired,
           };
           break;
         case 'mob-drop':
           acquisition = {
             type: 'mob-drop',
-            mobSources: formData.mobSources,
+            mobSources: formData.mobSources.map((source) => ({
+              // Convert floor back to number for storage
+              ...source,
+              floor: Number(source.floor),
+            })),
           };
           break;
         case 'merchant':
@@ -553,9 +584,9 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
                   type='number'
                   name='quantity'
                   placeholder='Quantity'
-                  value={ingredient.quantity}
+                  value={ingredient.quantity === '' ? '' : ingredient.quantity} // Display empty string for 0
                   onChange={(e) => handleIngredientChange(index, e)}
-                  min='1'
+                  min='0' // Allow 0 for temporary input
                 />
                 <button
                   type='button'
@@ -599,9 +630,10 @@ const RecipeForm: React.FC<RecipeFormProps> = () => {
                 <input
                   type='number'
                   name='floor'
-                  placeholder='Floor'
-                  value={source.floor}
+                  placeholder='Floor' // Changed placeholder
+                  value={source.floor === '' ? '' : source.floor} // Display empty string for 0
                   onChange={(e) => handleMobSourceChange(index, e)}
+                  min='0' // Allow 0 for temporary input
                 />
                 <button
                   type='button'

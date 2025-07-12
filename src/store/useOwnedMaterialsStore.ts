@@ -8,6 +8,7 @@ interface OwnedMaterialsState {
   updateOwnedMaterial: (itemName: string, newQuantity: number) => void;
   removeOwnedMaterial: (itemName: string) => void;
   clearOwnedMaterials: () => void;
+  setOwnedMaterials: (materials: OwnedMaterial[]) => void; // New action
 }
 
 export const useOwnedMaterialsStore = create<OwnedMaterialsState>()(
@@ -50,6 +51,7 @@ export const useOwnedMaterialsStore = create<OwnedMaterialsState>()(
         }));
       },
       clearOwnedMaterials: () => set({ ownedMaterials: [] }),
+      setOwnedMaterials: (materials) => set({ ownedMaterials: materials }), // Implementation for new action
     }),
     {
       name: 'owned-materials-storage', // unique name

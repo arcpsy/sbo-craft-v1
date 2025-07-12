@@ -5,31 +5,34 @@ import RecipeList from './components/RecipeList/RecipeList';
 import CraftingTreeViewer from './components/CraftingTreeViewer/CraftingTreeViewer';
 import Header from './components/Header/Header'; // Import the new Header component
 import { useRecipeStore } from './store/useRecipeStore';
-import type { AcquisitionType } from './types';
+import { useOwnedMaterialsStore } from './store/useOwnedMaterialsStore'; // Import owned materials store
 import { ItemType } from './types';
+import type { AcquisitionType, Recipe, OwnedMaterial } from './types'; // Import OwnedMaterial type
 import { Toaster, toast } from 'react-hot-toast';
 
 function App() {
   const { recipes, setRecipes } = useRecipeStore();
+  const { ownedMaterials, setOwnedMaterials } = useOwnedMaterialsStore(); // Get ownedMaterials and setOwnedMaterials
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleExport = () => {
     try {
-      const jsonString = JSON.stringify(recipes, null, 2);
+      const dataToExport = { recipes, ownedMaterials }; // Include ownedMaterials in export
+      const jsonString = JSON.stringify(dataToExport, null, 2);
       const blob = new Blob([jsonString], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'sbo_recipes.json';
+      a.download = 'sbo_data.json'; // Changed filename to reflect all data
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      toast.success('Recipes exported successfully!');
+      toast.success('Data exported successfully!');
     } catch (error) {
-      console.error('Failed to export recipes:', error);
+      console.error('Failed to export data:', error);
       toast.error(
-        'Failed to export recipes. Please check the console for details.',
+        'Failed to export data. Please check the console for details.',
       );
     }
   };
@@ -51,8 +54,10 @@ function App() {
         const content = e.target?.result as string;
         const importedData = JSON.parse(content);
 
-        if (!Array.isArray(importedData)) {
-          throw new Error('Imported file is not a valid JSON array.');
+        // Validate recipes
+        const importedRecipes: Recipe[] = importedData.recipes || [];
+        if (!Array.isArray(importedRecipes)) {
+          throw new Error('Imported recipes data is not a valid array.');
         }
 
         const validAcquisitionTypes: AcquisitionType[] = [
@@ -63,7 +68,7 @@ function App() {
           'quest-rewards',
         ];
 
-        const isValidData = importedData.every((item: any) => {
+        const isValidRecipes = importedRecipes.every((item: any) => {
           const hasBaseProps =
             item.itemName && item.itemType && item.acquisition;
 
@@ -78,18 +83,35 @@ function App() {
           return hasBaseProps && hasValidItemType && hasValidAcquisitionType;
         });
 
-        if (!isValidData) {
+        if (!isValidRecipes) {
           throw new Error(
-            'Imported data contains invalid recipe entries or missing essential fields.',
+            'Imported recipes data contains invalid entries or missing essential fields.',
           );
         }
 
-        setRecipes(importedData);
-        toast.success(`Successfully imported ${importedData.length} recipes!`);
+        // Validate owned materials
+        const importedOwnedMaterials: OwnedMaterial[] = importedData.ownedMaterials || [];
+        if (!Array.isArray(importedOwnedMaterials)) {
+          throw new Error('Imported owned materials data is not a valid array.');
+        }
+
+        const isValidOwnedMaterials = importedOwnedMaterials.every((item: any) => {
+          return typeof item.itemName === 'string' && typeof item.quantity === 'number' && item.quantity >= 0;
+        });
+
+        if (!isValidOwnedMaterials) {
+          throw new Error(
+            'Imported owned materials data contains invalid entries or missing essential fields.',
+          );
+        }
+
+        setRecipes(importedRecipes);
+        setOwnedMaterials(importedOwnedMaterials); // Set owned materials
+        toast.success(`Successfully imported ${importedRecipes.length} recipes and ${importedOwnedMaterials.length} owned materials!`);
       } catch (error: any) {
-        console.error('Failed to import recipes:', error);
+        console.error('Failed to import data:', error);
         toast.error(
-          `Failed to import recipes: ${error.message}. Please check the console.`,
+          `Failed to import data: ${error.message}. Please check the console.`,
         );
       } finally {
         event.target.value = '';

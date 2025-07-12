@@ -116,7 +116,7 @@ const CraftingTreeViewer: React.FC = () => {
   // State for adding new owned materials
   const [newOwnedMaterialName, setNewOwnedMaterialName] = useState<string>('');
   const [newOwnedMaterialQuantity, setNewOwnedMaterialQuantity] =
-    useState<number>(1);
+    useState<string>(''); // Changed to string and initialized to empty
 
   // Filter recipes to get only blacksmithing recipes, as only these can form a crafting tree
   const blacksmithingRecipes = recipes.filter(
@@ -158,15 +158,16 @@ const CraftingTreeViewer: React.FC = () => {
   }, [selectedRootItem, recipes, ownedMaterials]); // Add ownedMaterials to dependencies
 
   const handleAddOwnedMaterial = useCallback(() => {
-    if (newOwnedMaterialName.trim() && newOwnedMaterialQuantity > 0) {
+    const quantity = Number(newOwnedMaterialQuantity); // Parse to number here
+    if (newOwnedMaterialName.trim() && !isNaN(quantity) && quantity >= 0) {
       addOwnedMaterial({
         itemName: newOwnedMaterialName.trim(),
-        quantity: newOwnedMaterialQuantity,
+        quantity: quantity,
       });
       setNewOwnedMaterialName('');
-      setNewOwnedMaterialQuantity(1);
+      setNewOwnedMaterialQuantity(''); // Reset to empty string
       toast.success(
-        `Added ${newOwnedMaterialQuantity} x ${newOwnedMaterialName} to owned materials.`,
+        `Added ${quantity} x ${newOwnedMaterialName} to owned materials.`,
       );
     } else {
       toast.error('Please enter a valid material name and quantity.');
@@ -175,19 +176,23 @@ const CraftingTreeViewer: React.FC = () => {
 
   const handleUpdateOwnedMaterialQuantity = useCallback(
     (itemName: string, value: string) => {
-      const parsedQuantity = parseInt(value, 10);
-      if (isNaN(parsedQuantity) || value.trim() === '') {
-        // If input is empty or not a number, don't remove, just update to 0 for display
-        updateOwnedMaterial(itemName, 0); // Temporarily set to 0 for display
-      } else if (parsedQuantity > 0) {
-        updateOwnedMaterial(itemName, parsedQuantity);
-        toast.success(`Updated ${itemName} quantity to ${parsedQuantity}.`);
-      } else if (parsedQuantity === 0) {
-        removeOwnedMaterial(itemName);
-        toast.success(`Removed ${itemName} from owned materials.`);
+      const parsedQuantity = Number(value); // Use Number() for parsing
+
+      // If the input is empty or not a valid number, treat as 0 for storage.
+      // This keeps the item in the list but with 0 quantity.
+      const quantityToStore = isNaN(parsedQuantity) || parsedQuantity < 0 ? 0 : parsedQuantity;
+
+      updateOwnedMaterial(itemName, quantityToStore);
+
+      // Only show toast if quantity is actually changing to a non-zero value
+      // or if it's explicitly set to 0 by user input (not just backspacing to empty).
+      if (quantityToStore > 0) {
+        toast.success(`Updated ${itemName} quantity to ${quantityToStore}.`);
+      } else if (value.trim() === '0') { // User explicitly typed '0'
+        toast.success(`Set ${itemName} quantity to 0.`);
       }
     },
-    [updateOwnedMaterial, removeOwnedMaterial],
+    [updateOwnedMaterial],
   );
 
   const handleRemoveOwnedMaterial = useCallback(
@@ -233,11 +238,11 @@ const CraftingTreeViewer: React.FC = () => {
           <input
             type='number'
             placeholder='Quantity'
-            value={newOwnedMaterialQuantity}
+            value={newOwnedMaterialQuantity} /* Directly use string state */
             onChange={(e) =>
-              setNewOwnedMaterialQuantity(Number(e.target.value))
+              setNewOwnedMaterialQuantity(e.target.value) /* Keep as string initially */
             }
-            min='1'
+            min='0'
           />
           <button onClick={handleAddOwnedMaterial}>Add Material</button>
         </div>
@@ -252,7 +257,7 @@ const CraftingTreeViewer: React.FC = () => {
                 <div className='material-actions'>
                   <input
                     type='number'
-                    value={material.quantity === 0 ? '' : material.quantity} /* Display empty string for 0 to allow backspacing */
+                    value={material.quantity === 0 ? '' : material.quantity.toString()} /* Display empty string for 0 to allow backspacing */
                     onChange={(e) =>
                       handleUpdateOwnedMaterialQuantity(
                         material.itemName,
