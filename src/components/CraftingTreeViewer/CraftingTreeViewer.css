@@ -2,9 +2,13 @@
 
 .crafting-tree-viewer-container {
   background-color: var(--color-background-card);
-  border-radius: var(--border-radius-md); /* Adjusted from lg */
-  padding: var(--spacing-md); /* Adjusted from lg */
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
   border: 1px solid var(--color-border);
+}
+
+.crafting-tree-viewer-container h2 {
+  margin-bottom: var(--spacing-lg); /* Increased space below main heading */
 }
 
 .crafting-tree-display {
@@ -13,6 +17,10 @@
   padding: var(--spacing-md);
   border-radius: var(--border-radius-md);
   background-color: var(--color-background-nested);
+}
+
+.crafting-tree-display h3 {
+  margin-bottom: var(--spacing-md); /* Consistent spacing below sub-heading */
 }
 
 .tree-root,
@@ -28,18 +36,19 @@
 }
 
 .tree-root li {
-  padding: var(--spacing-xxs) 0;
+  padding: var(--spacing-xxs) 0; /* Keep tight vertical spacing for tree nodes */
+  line-height: 1.4; /* Slightly adjust line height for readability */
 }
 
 .crafted-item {
   font-weight: var(--font-weight-medium);
   color: var(--color-primary);
-  font-size: var(--font-size-base); /* Adjusted to new base font size */
+  font-size: var(--font-size-base);
 }
 
 .raw-material {
   color: var(--color-secondary);
-  font-size: var(--font-size-base); /* Adjusted to new base font size */
+  font-size: var(--font-size-base);
 }
 
 .node-type-label {
@@ -57,7 +66,7 @@
 
 .remaining-materials-tree-display {
   margin-top: var(--spacing-lg);
-  border: 1px solid var(--color-border-dark); /* Changed from red debugging border */
+  border: 1px solid var(--color-border-dark);
   padding: var(--spacing-md);
   border-radius: var(--border-radius-md);
   background-color: var(--color-background-nested);
@@ -81,16 +90,16 @@
 .toggle-button {
   background: none;
   border: none;
-  font-size: var(--font-size-base); /* Adjusted from 0.9em */
+  font-size: var(--font-size-base);
   cursor: pointer;
   margin-right: var(--spacing-xs);
   color: var(--color-text-muted);
-  transition: color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease); /* Added transform transition */
+  transition: color var(--transition-speed) var(--transition-ease), transform var(--transition-speed) var(--transition-ease);
 }
 
 .toggle-button:hover {
   color: var(--color-primary);
-  transform: translateY(-1px); /* Subtle lift on hover */
+  transform: translateY(-1px);
 }
 
 .cycle-warning {
@@ -116,7 +125,7 @@
   margin-bottom: var(--spacing-xs);
 }
 
-/* New styles for Owned Materials Section */
+/* Improved styles for Owned Materials Section */
 .owned-materials-section {
   margin-top: var(--spacing-lg);
   padding: var(--spacing-md);
