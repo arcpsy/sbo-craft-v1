@@ -13,8 +13,16 @@
 }
 
 .crafting-options-row .form-group {
-  flex: 1; /* Allow form groups to take equal space */
   margin-bottom: 0; /* Remove bottom margin from individual form groups */
+}
+
+.crafting-options-row .form-group:first-child {
+  flex: 3; /* Give more space to the select dropdown */
+}
+
+.crafting-options-row .form-group:last-child {
+  flex: 1; /* Give less space to the quantity input */
+  max-width: 120px; /* Limit the width of the quantity input */
 }
 
 .crafting-options-row .form-group label {
