@@ -19,29 +19,58 @@
 }
 
 .sidebar-footer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-xs);
   padding: var(--spacing-md);
+  text-align: center;
 }
 
 .footer-message {
+  display: inline-flex; /* Use inline-flex to keep elements on one line */
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
-  opacity: 0.6;
-  text-align: center;
-  margin: 0;
+  opacity: 0.7;
+}
+
+@keyframes subtle-shimmer {
+  0% {
+    background-position: -150% center;
+  }
+  100% {
+    background-position: 150% center;
+  }
+}
+
+.special-name {
+  font-weight: var(--font-weight-bold);
+  background: linear-gradient(
+    90deg,
+    var(--color-primary-light),
+    var(--color-secondary),
+    #84ffff,
+    /* Cyan accent */ var(--color-primary-light)
+  );
+  background-size: 150% auto;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: subtle-shimmer 4s linear infinite;
+}
+
+.heart-container {
+  display: inline-flex; /* Ensure the container aligns well */
+  align-items: center;
 }
 
 .heart-container svg {
-  font-size: 1.1em; /* Smaller base size */
+  font-size: 1.1em;
   color: var(--color-primary);
   transition: transform 0.3s ease;
 }
 
 .heart-container:hover svg {
-  transform: scale(1.2); /* Slightly larger on hover */
+  transform: scale(1.25);
 }
 
 .sidebar-nav ul {
@@ -111,10 +140,6 @@
   /* Specific styles for export button if needed */
 }
 
-.sidebar-button.import-btn {
-  /* Specific styles for import button if needed */
-}
-
 .sidebar-toggle {
   display: none;
   position: fixed;
@@ -126,6 +151,20 @@
   border-radius: var(--border-radius-sm);
   padding: var(--spacing-xs);
   cursor: pointer;
+}
+
+.footer-top-message {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-xs);
+  text-align: center;
+}
+
+.footer-bottom-message {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--spacing-xs);
+  text-align: center;
 }
 
 @media (max-width: 768px) {

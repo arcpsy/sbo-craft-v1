@@ -81,12 +81,15 @@ const Sidebar: React.FC<SidebarProps> = ({
           </ul>
         </nav>
         <div className='sidebar-footer'>
-          <div className='heart-container'>
-            <FaHeart />
-          </div>
-          <p className='footer-message'>
-            Crafted with care for the one and only buttermilk_477
+          <p className='footer-top-message'>
+            Crafted with care for the one and only
           </p>
+          <div className='footer-bottom-message'>
+            <span className='special-name'>buttermilk_477 &nbsp;</span>
+            <div className='heart-container'>
+              <FaHeart />
+            </div>
+          </div>
         </div>
         <div className='sidebar-data-management'>
           <button
