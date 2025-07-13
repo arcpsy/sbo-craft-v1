@@ -155,23 +155,48 @@ const RecipeList: React.FC<RecipeListProps> = () => {
    * @param acquisition The acquisition object containing type and details.
    * @returns A formatted string describing the acquisition.
    */
-  const getAcquisitionDetails = (acquisition: Acquisition): string => {
+  const getAcquisitionDetails = (acquisition: Acquisition): React.ReactNode => {
     switch (acquisition.type) {
       case 'blacksmithing':
-        return `Smithing Skill: ${acquisition.smithingSkillRequired || 'N/A'}`;
+        return (
+          <>
+            <span className='acquisition-label'>Smithing Skill:</span>{' '}
+            {acquisition.smithingSkillRequired || 'N/A'}
+          </>
+        );
       case 'mob-drop':
-        return `Mob Drop: ${acquisition.mobSources
-          .map(
-            (source) =>
-              `${source.mobName} (${source.mobType}) on F${source.floor}`,
-          )
-          .join(', ')}`;
+        return (
+          <>
+            <span className='acquisition-label'>Mob Drop:</span>{' '}
+            {acquisition.mobSources
+              .map(
+                (source) =>
+                  `${source.mobName} (${source.mobType}) on F${source.floor}`,
+              )
+              .join(', ')}
+          </>
+        );
       case 'merchant':
-        return `Merchant: ${acquisition.itemWorthCol} Col on F${acquisition.merchantFloor}`;
+        return (
+          <>
+            <span className='acquisition-label'>Merchant:</span>{' '}
+            {acquisition.itemWorthCol} Col on F{acquisition.merchantFloor}
+          </>
+        );
       case 'mining':
-        return `Mining: F${acquisition.mineableFloor}`;
+        return (
+          <>
+            <span className='acquisition-label'>Mining:</span> F
+            {acquisition.mineableFloor}
+          </>
+        );
       case 'quest-rewards':
-        return `Quest: ${acquisition.questName} on F${acquisition.questFloor}`;
+        return (
+          <>
+            <span className='acquisition-label'>Quest:</span>{' '}
+            {acquisition.questName} on F{acquisition.questFloor}
+          </>
+        );
       default:
         return 'Unknown Acquisition Type';
     }
@@ -309,12 +334,15 @@ const RecipeList: React.FC<RecipeListProps> = () => {
                       <p>
                         <strong>Type:</strong> {recipe.itemType}
                       </p>
-                      <p>
-                        <strong>Acquisition:</strong> {recipe.acquisition.type}
-                        <br />
-                        {/* Displays specific acquisition details based on type */}
-                        <span>{getAcquisitionDetails(recipe.acquisition)}</span>
-                      </p>
+                      <div style={{ marginBottom: 'var(--spacing-xs)' }}>
+                        <p style={{ marginBottom: 'var(--spacing-xxs)' }}>
+                          <strong>Acquisition:</strong>{' '}
+                          {recipe.acquisition.type}
+                        </p>
+                        <div style={{ paddingLeft: '1em' }}>
+                          {getAcquisitionDetails(recipe.acquisition)}
+                        </div>
+                      </div>
                       {/* Conditionally renders ingredients for blacksmithing recipes */}
                       {recipe.acquisition.type === 'blacksmithing' &&
                         recipe.acquisition.ingredients.length > 0 && (
