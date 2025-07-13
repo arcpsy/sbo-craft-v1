@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { FaHeart } from 'react-icons/fa';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -79,6 +80,14 @@ const Sidebar: React.FC<SidebarProps> = ({
             </li>
           </ul>
         </nav>
+        <div className='sidebar-footer'>
+          <div className='heart-container'>
+            <FaHeart />
+          </div>
+          <p className='footer-message'>
+            Crafted with care for the one and only buttermilk_477
+          </p>
+        </div>
         <div className='sidebar-data-management'>
           <button
             onClick={onExportRecipes}
