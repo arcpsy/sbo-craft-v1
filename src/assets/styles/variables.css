@@ -2,23 +2,23 @@
 
 :root {
   /* --- Colors: Professional & Elegant Green Theme --- */
-  --color-primary: #38A169; /* Emerald for interactive elements */
-  --color-primary-dark: #2F855A; /* Emerald dark for primary accents */
-  --color-primary-light: #68D391; /* Lighter emerald for subtle highlights */
-  --color-secondary: #FFC107; /* Complementary accent, e.g., for warnings */
-  --color-tertiary: #607D8B; /* A subtle, elegant grey-blue */
+  --color-primary: #38a169; /* Emerald for interactive elements */
+  --color-primary-dark: #2f855a; /* Emerald dark for primary accents */
+  --color-primary-light: #68d391; /* Lighter emerald for subtle highlights */
+  --color-secondary: #ffc107; /* Complementary accent, e.g., for warnings */
+  --color-tertiary: #607d8b; /* A subtle, elegant grey-blue */
 
   /* Core Dark Palette with subtle green tint */
-  --color-background-app: #1A1A1A; /* Very dark grey */
+  --color-background-app: #1a1a1a; /* Very dark grey */
   --color-background-card: #212121; /* Slightly lighter dark grey */
-  --color-background-nested: #2C2C2C; /* Even lighter dark grey for nested elements */
-  --color-background-input: #1A1A1A; /* Dark input fields */
-  --color-background-hover: #3A3A3A; /* Darker hover state */
+  --color-background-nested: #2c2c2c; /* Even lighter dark grey for nested elements */
+  --color-background-input: #1a1a1a; /* Dark input fields */
+  --color-background-hover: #3a3a3a; /* Darker hover state */
 
   /* Text Colors */
-  --color-text-light: #E0E0E0; /* Light grey for main text */
-  --color-text-muted: #B0B0B0; /* Muted grey for secondary text */
-  --color-text-dark: #1A1A1A; /* Dark text for light backgrounds (e.g., primary buttons) */
+  --color-text-light: #e0e0e0; /* Light grey for main text */
+  --color-text-muted: #b0b0b0; /* Muted grey for secondary text */
+  --color-text-dark: #1a1a1a; /* Dark text for light backgrounds (e.g., primary buttons) */
 
   /* Borders & Dividers */
   --color-border: #424242; /* Dark grey border */
@@ -26,10 +26,10 @@
   --color-divider: #505050; /* Slightly lighter divider */
 
   /* Status Colors */
-  --color-error: #D32F2F; /* Red for errors */
-  --color-warning: #FFA000; /* Orange for warnings */
-  --color-info: #1976D2; /* Blue for info */
-  --color-success: #38A169; /* Green for success, matching primary */
+  --color-error: #d32f2f; /* Red for errors */
+  --color-warning: #ffa000; /* Orange for warnings */
+  --color-info: #1976d2; /* Blue for info */
+  --color-success: #38a169; /* Green for success, matching primary */
 
   /* Spacing System (4px grid) */
   --spacing-xxs: 4px;

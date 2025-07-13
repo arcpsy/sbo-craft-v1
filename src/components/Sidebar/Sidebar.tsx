@@ -5,7 +5,7 @@ import './Sidebar.css';
 interface SidebarProps {
   onExportRecipes: () => void;
   onImportRecipes: () => void;
-  fileInputRef: React.RefObject<HTMLInputElement>;
+  fileInputRef: React.RefObject<HTMLInputElement | null>;
   onImportFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 

@@ -25,7 +25,8 @@ export const useOwnedMaterialsStore = create<OwnedMaterialsState>()(
             const updatedMaterials = [...state.ownedMaterials];
             updatedMaterials[existingIndex] = {
               ...updatedMaterials[existingIndex],
-              quantity: updatedMaterials[existingIndex].quantity + material.quantity,
+              quantity:
+                updatedMaterials[existingIndex].quantity + material.quantity,
             };
             return { ownedMaterials: updatedMaterials };
           } else {
