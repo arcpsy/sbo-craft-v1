@@ -134,22 +134,6 @@
   text-align: center;
 }
 
-/* Remove button styling within dynamic lists */
-.ingredient-item button,
-.mob-source-item button {
-  background-color: var(--color-error);
-  color: var(--color-text-light); /* Changed to light for better contrast */
-  padding: var(--spacing-xxs) var(--spacing-xs); /* Smaller padding */
-  font-size: var(--font-size-sm);
-  border-radius: var(--border-radius-sm);
-  flex-shrink: 0; /* Prevent button from shrinking */
-}
-
-.ingredient-item button:hover,
-.mob-source-item button:hover {
-  background-color: #cc2222; /* Darker red on hover */
-}
-
 /* Add button styling for dynamic lists */
 .acquisition-fields > button {
   background-color: var(

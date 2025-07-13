@@ -157,7 +157,7 @@
 
 .ingredient-item input[name='quantity'] {
   flex-grow: 0; /* Don't let quantity input grow */
-  width: 60px; /* Adjusted fixed width for quantity */
+  width: 80px; /* Adjusted fixed width for quantity */
   text-align: center;
 }
 
@@ -166,7 +166,7 @@
 .mob-source-item button {
   background-color: var(--color-error);
   color: var(--color-text-light); /* Changed to light for better contrast */
-  padding: var(--spacing-xxs) var(--spacing-xs); /* Smaller padding */
+  padding: var(--spacing-xs) var(--spacing-xs); /* Smaller padding */
   font-size: var(--font-size-sm); /* Smaller font size */
   border-radius: var(--border-radius-sm);
   flex-shrink: 0; /* Prevent button from shrinking */
