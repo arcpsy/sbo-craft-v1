@@ -95,6 +95,8 @@ const CraftingTreeViewer: React.FC = () => {
 
   // State for the currently selected root item for the crafting tree
   const [selectedRootItem, setSelectedRootItem] = useState<string>('');
+  const [desiredQuantity, setDesiredQuantity] = useState<number>(1); // New state for desired quantity
+  const [quantityInput, setQuantityInput] = useState<string>('1'); // State for raw input string
   // State to store the generated crafting tree (root TreeNode)
   const [craftingTree, setCraftingTree] = useState<TreeNode | null>(null);
   // State to store the calculated remaining materials tree
@@ -124,7 +126,7 @@ const CraftingTreeViewer: React.FC = () => {
         const calculatedRemainingTree = calculateRemainingMaterialsTree(
           tree,
           ownedMaterialsMap,
-          1,
+          desiredQuantity,
         );
         setRemainingMaterialsTree(calculatedRemainingTree);
         console.log(
@@ -140,28 +142,54 @@ const CraftingTreeViewer: React.FC = () => {
       setRemainingMaterialsTree(null);
       setDetectedCycles([]);
     }
-  }, [selectedRootItem, recipes, ownedMaterials]); // Add ownedMaterials to dependencies
+  }, [selectedRootItem, recipes, ownedMaterials, desiredQuantity]); // Add ownedMaterials and desiredQuantity to dependencies
 
   return (
     <div className='crafting-tree-viewer-container card'>
       <h2>Crafting Tree Viewer</h2>
 
-      {/* Dropdown to select the root item for the crafting tree */}
-      <div className='form-group'>
-        <label htmlFor='rootItemSelect'>Select Crafted Item:</label>
-        <select
-          id='rootItemSelect'
-          value={selectedRootItem}
-          onChange={(e) => setSelectedRootItem(e.target.value)}
-        >
-          <option value=''>-- Select an item --</option>
-          {/* Populate dropdown with available blacksmithing recipes */}
-          {blacksmithingRecipes.map((recipe) => (
-            <option key={recipe.itemName} value={recipe.itemName}>
-              {recipe.itemName}
-            </option>
-          ))}
-        </select>
+      <div className='crafting-options-row'>
+        <div className='form-group'>
+          <label htmlFor='rootItemSelect'>Select Crafted Item:</label>
+          <select
+            id='rootItemSelect'
+            value={selectedRootItem}
+            onChange={(e) => setSelectedRootItem(e.target.value)}
+          >
+            <option value=''>-- Select an item --</option>
+            {/* Populate dropdown with available blacksmithing recipes */}
+            {blacksmithingRecipes.map((recipe) => (
+              <option key={recipe.itemName} value={recipe.itemName}>
+                {recipe.itemName}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className='form-group'>
+          <label htmlFor='desiredQuantity'>Desired Quantity:</label>
+          <input
+            type='number'
+            id='desiredQuantity'
+            value={quantityInput}
+            onChange={(e) => {
+              const value = e.target.value;
+              setQuantityInput(value);
+              const parsedValue = parseInt(value);
+              if (!isNaN(parsedValue) && parsedValue >= 1) {
+                setDesiredQuantity(parsedValue);
+              } else if (value === '') {
+                setDesiredQuantity(1); // Default to 1 if input is empty
+              }
+            }}
+            onBlur={() => {
+              // When input loses focus, ensure desiredQuantity is reflected in quantityInput
+              setQuantityInput(desiredQuantity.toString());
+            }}
+            min='1'
+            className='quantity-input'
+          />
+        </div>
       </div>
 
       {/* OwnedMaterials component will be rendered here by App.tsx */}

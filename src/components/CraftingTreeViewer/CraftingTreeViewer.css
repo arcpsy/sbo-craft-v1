@@ -5,6 +5,27 @@
   font-size: var(--font-size-lg); /* Consistent with sidebar/form titles */
 }
 
+.crafting-options-row {
+  display: flex;
+  gap: var(--spacing-md); /* Adjust as needed for spacing between elements */
+  align-items: flex-end; /* Align items to the bottom */
+  margin-bottom: var(--spacing-md); /* Add some space below the row */
+}
+
+.crafting-options-row .form-group {
+  flex: 1; /* Allow form groups to take equal space */
+  margin-bottom: 0; /* Remove bottom margin from individual form groups */
+}
+
+.crafting-options-row .form-group label {
+  white-space: nowrap; /* Prevent labels from wrapping */
+}
+
+.crafting-options-row .form-group select,
+.crafting-options-row .form-group input[type='number'] {
+  width: 100%; /* Make inputs take full width of their flex item */
+}
+
 .crafting-tree-viewer-container .form-group {
   margin-bottom: var(--spacing-md); /* Consistent with form-group spacing */
 }
