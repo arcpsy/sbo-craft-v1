@@ -13,7 +13,7 @@ interface OwnedMaterialsState {
 
 export const useOwnedMaterialsStore = create<OwnedMaterialsState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       ownedMaterials: [],
       addOwnedMaterial: (material) => {
         set((state) => {
