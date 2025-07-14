@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import RecipeForm from './components/RecipeForm/RecipeForm';
 import RecipeList from './components/RecipeList/RecipeList';
@@ -15,6 +15,11 @@ function App() {
   const { recipes, setRecipes } = useRecipeStore();
   const { ownedMaterials, setOwnedMaterials } = useOwnedMaterialsStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+
+  const toggleSidebar = () => {
+    setIsSidebarVisible(!isSidebarVisible);
+  };
 
   const handleExport = () => {
     try {
@@ -145,9 +150,13 @@ function App() {
           onImportRecipes={handleImportClick}
           fileInputRef={fileInputRef}
           onImportFileChange={handleImport}
+          isSidebarVisible={isSidebarVisible}
+          toggleSidebar={toggleSidebar}
         />
 
-        <div className='main-content scrollbar-custom'>
+        <div
+          className={`main-content scrollbar-custom ${!isSidebarVisible ? 'main-content-expanded' : ''}`}
+        >
           {/* Removed main-content-header */}
           <Routes>
             <Route

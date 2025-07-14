@@ -12,6 +12,25 @@
   margin-bottom: var(--spacing-md); /* Add some space below the row */
 }
 
+@media (max-width: 768px) {
+  .crafting-options-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-sm);
+  }
+
+  .crafting-options-row .form-group:first-child,
+  .crafting-options-row .form-group:last-child {
+    flex: none;
+    max-width: none;
+  }
+
+  .crafting-tree-display,
+  .remaining-materials-tree-display {
+    overflow-x: auto;
+  }
+}
+
 .crafting-options-row .form-group {
   margin-bottom: 0; /* Remove bottom margin from individual form groups */
 }

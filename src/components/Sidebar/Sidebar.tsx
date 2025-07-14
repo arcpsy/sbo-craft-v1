@@ -8,6 +8,8 @@ interface SidebarProps {
   onImportRecipes: () => void;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   onImportFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  isSidebarVisible: boolean;
+  toggleSidebar: () => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -15,13 +17,10 @@ const Sidebar: React.FC<SidebarProps> = ({
   onImportRecipes,
   fileInputRef,
   onImportFileChange,
+  isSidebarVisible,
+  toggleSidebar,
 }) => {
   const location = useLocation();
-  const [isSidebarVisible, setSidebarVisible] = useState(true);
-
-  const toggleSidebar = () => {
-    setSidebarVisible(!isSidebarVisible);
-  };
 
   return (
     <>

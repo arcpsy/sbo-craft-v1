@@ -23,6 +23,11 @@
   flex-direction: column;
   z-index: 1000;
   border-right: 1px solid var(--color-border);
+  transition: transform 0.3s ease-in-out;
+}
+
+.sidebar.hidden {
+  transform: translateX(-100%);
 }
 
 .main-content {
@@ -34,6 +39,11 @@
   flex-direction: column;
   height: 100dvh;
   overflow-y: auto;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.main-content.main-content-expanded {
+  margin-left: 0;
 }
 
 .right-sidebar {
@@ -53,51 +63,23 @@
   border-left: 1px solid var(--color-border);
 }
 
-.recipe-form-container {
-  padding: var(--spacing-md);
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.recipe-list-container {
-  background-color: var(--color-background-card);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-md);
-  border: 1px solid var(--color-border);
-  display: flex;
-  flex-direction: column;
-  flex-grow: 1; /* Allow it to grow within main content */
-}
-
-.crafting-tree-viewer-container {
-  background-color: var(--color-background-card);
-  border-radius: var(--border-radius-md);
-  padding: var(--spacing-md);
-  border: 1px solid var(--color-border);
-  flex-grow: 1; /* Allow it to grow within viewer-row */
-  display: flex; /* Make it a flex container */
-  flex-direction: column; /* Stack its children vertically */
-}
-
+.recipe-form-container,
+.recipe-list-container,
+.crafting-tree-viewer-container,
 .owned-materials-section {
-  padding: var(--spacing-md); /* Divisible by 4 */
+  padding: var(--spacing-md);
   border: 1px solid var(--color-border);
-  border-radius: var(--border-radius-md); /* Divisible by 4 */
+  border-radius: var(--border-radius-md);
   background-color: var(--color-background-card);
-  height: 100%;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
 }
 
-@media (max-width: 768px) {
-  .App {
-    flex-direction: column;
-  }
-
+/* Media Queries */
+@media (max-width: 1024px) {
   .main-content {
-    margin-left: 0;
-    margin-right: 0;
+    margin-right: 0; /* Remove right margin for smaller desktops/laptops */
   }
 
   .right-sidebar {
@@ -106,5 +88,50 @@
     height: auto;
     border-left: none;
     border-top: 1px solid var(--color-border);
+  }
+}
+
+@media (max-width: 768px) {
+  .App {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    box-shadow: none;
+    border-right: none;
+    border-bottom: 1px solid var(--color-border-dark);
+  }
+
+  .main-content {
+    margin-left: 0;
+    margin-right: 0;
+    padding: var(--spacing-sm);
+  }
+
+  .recipe-form-container,
+  .recipe-list-container,
+  .crafting-tree-viewer-container,
+  .owned-materials-section {
+    padding: var(--spacing-sm);
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: var(--spacing-xs);
+  }
+
+  .recipe-form-container,
+  .recipe-list-container,
+  .crafting-tree-viewer-container,
+  .owned-materials-section {
+    padding: var(--spacing-xs);
+  }
+
+  .sidebar {
+    padding: var(--spacing-xs);
   }
 }
